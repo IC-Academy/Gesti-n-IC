@@ -160,7 +160,7 @@ export function BandejaBI() {
                 {solicitudes.map((s) => (
                   <tr
                     key={s.recordId}
-                    onClick={() => navigate(`/evaluacion/${encodeURIComponent(s.folio)}`)}
+                    onClick={() => navigate(`/bi/evaluacion/${encodeURIComponent(s.folio)}`)}
                     className="cursor-pointer border-b border-slate-100 hover:bg-blue-50/50"
                   >
                     <td className="px-5 py-3 font-mono text-xs text-slate-700">{s.folio}</td>

@@ -374,7 +374,7 @@ export function EvaluacionBI() {
       </form>
 
       <div className="mt-6">
-        <Link to="/bandeja" className="text-sm text-blue-700 hover:underline">← Volver a la Bandeja BI</Link>
+        <Link to="/bi/bandeja" className="text-sm text-blue-700 hover:underline">← Volver a la Bandeja BI</Link>
       </div>
 
       {previewOpen ? (

@@ -56,6 +56,10 @@ jobs:
           VITE_PBI06_URL: ${{ vars.VITE_PBI06_URL }}
           VITE_PBI07_URL: ${{ vars.VITE_PBI07_URL }}
           VITE_DEFAULT_API_KEY: ${{ secrets.VITE_DEFAULT_API_KEY }}
+          # Opcional: webhook futuro del módulo de Gestión de Proyectos (portal
+          # del solicitante nuevo). Mientras no exista, dejar sin configurar:
+          # el módulo sigue funcionando en modo demostración (ver README.md).
+          VITE_PROJECTS_REQUEST_URL: ${{ vars.VITE_PROJECTS_REQUEST_URL }}
           VITE_BASE_PATH: /Gesti-n-IC/
         run: npm run build
 

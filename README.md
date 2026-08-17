@@ -1,31 +1,126 @@
 # Gestión IC — Portal Corporativo de Proyectos
 
-Primera evolución del portal hacia la gestión transversal de proyectos corporativos
-con duración estimada mayor a 30 días. Conserva los contratos PBI-01 a PBI-07 con
-Airtable y n8n e incorpora acceso por roles, portafolio, evidencias, equipo y administración.
+Primera versión funcional del portal para administrar proyectos con duración mayor a
+30 días entre distintas áreas de la organización: solicitud, dictamen, asignación,
+seguimiento con evidencias y administración por roles (Usuario, Líder, Administrador).
 
-**Repositorio definitivo:** https://github.com/IC-Academy/Gesti-n-IC
+Conserva intactos los contratos reales **PBI-01 a PBI-07** con n8n/Airtable (registro y
+consulta de solicitudes BI, bandeja, evaluación y autorizaciones) e incorpora, como
+módulo nuevo, la gestión de proyectos con modelo de datos completo, catálogo de
+estados centralizado, permisos por rol y datos de demostración.
+
+**Repositorio:** https://github.com/IC-Academy/Gesti-n-IC
 **URL pública (GitHub Pages):** https://ic-academy.github.io/Gesti-n-IC/
 
-Frontend de Gestión IC. No tiene backend propio: cada
-pantalla llama directamente, por `fetch()` desde el navegador, a los webhooks reales de
-n8n (PBI-01 a PBI-07), que a su vez leen/escriben en Airtable. No se usan datos
-simulados como fuente de datos en ninguna pantalla.
+Stack: React 19 + TypeScript + Vite + Tailwind CSS v4 + React Router (`HashRouter`) +
+React Hook Form + Zod + Recharts + lucide-react. Sin backend propio.
 
-Stack: React 19 + TypeScript + Vite + Tailwind CSS v4 + React Router (HashRouter) +
-React Hook Form + Zod + Recharts + lucide-react.
+## Qué es real y qué es demostración
 
-## Pantallas
-
-| Ruta | Pantalla | Webhook(s) que usa |
+| Área | Estado | Detalle |
 |---|---|---|
-| `/bandeja` | Bandeja BI (inicio) | PBI-03 `pbi/solicitudes/listar` |
-| `/registrar` | Registrar solicitud | PBI-01 `pbi/solicitudes` |
-| `/consultar` | Consultar solicitud | PBI-02 `pbi/solicitudes/consultar` |
-| `/evaluacion/:folio` | Evaluación BI + envío a autorización (microinforme) | PBI-04 `pbi/evaluaciones/guardar`, PBI-05 `pbi/autorizacion/enviar` |
-| `/autorizaciones` | Centro de autorizaciones | PBI-06 `pbi/aprobacion/consultar`, PBI-07 `pbi/aprobacion/decidir` |
+| Solicitudes BI (`/#/bi/...`) | **Real** | Habla directo con los 7 webhooks de n8n/Airtable (PBI-01 a PBI-07). Contratos sin cambios. |
+| Gestión de Proyectos (`/#/proyectos`, `/#/solicitudes`, `/#/admin/...`, `/#/portal/...`) | **Demostración** | No existe todavía un backend para este módulo. Los datos viven en `localStorage` (`src/lib/demoStore.ts`), sembrados con información de ejemplo realista. La capa de servicio (`src/lib/projectsApi.ts`) ya está tipada y preparada para conectarse a n8n vía `VITE_PROJECTS_REQUEST_URL` cuando ese webhook exista. |
+| Autenticación / selección de perfil | **Simulada** | No hay login real: se elige una persona de ejemplo (ver `src/lib/session.tsx`). La versión productiva debe sustituir esto por el proveedor de identidad corporativo (p. ej. Microsoft Entra ID). |
 
-Las URLs completas de cada webhook están en `.env.example` / `src/lib/config.ts`.
+En ambos casos, si falta configuración (una URL `VITE_PBI0X_URL`, o el nuevo
+`VITE_PROJECTS_REQUEST_URL`), la aplicación **nunca se queda en blanco**: cae a un modo
+demostración local claramente marcado en la interfaz (etiqueta "● Datos de
+demostración" / "● Integración real · n8n").
+
+## Cómo probar cada rol
+
+1. `npm install && npm run dev` y abre `http://localhost:5173/Gesti-n-IC/`.
+2. En la pantalla de bienvenida, elige una de las 8 personas de ejemplo (1
+   administrador, 2 líderes, 5 usuarios, repartidos en 4 áreas). El rol y el área se
+   muestran en el encabezado y determinan qué ves.
+
+| Persona | Rol | Área | Qué puedes probar |
+|---|---|---|---|
+| Andrea Bautista | Administrador | Dirección de Tecnología | Todo: usuarios, roles, áreas, catálogos, auditoría, y todas las funciones de líder/usuario. |
+| Jorge Mejía | Líder | Inteligencia de Negocios | Solicitudes del área, asignación, carga de trabajo, validación de evidencias, alertas. |
+| Patricia Solís | Líder | Operaciones | Igual que Jorge, con el portafolio de Operaciones (incluye un proyecto bloqueado y uno próximo a vencer). |
+| Daniela Juárez / Ricardo Nava | Usuario | Inteligencia de Negocios | Mis proyectos, registrar avance, cargar evidencias, historial. |
+| Manuel Ortega / Sofía Camacho | Usuario | Operaciones | Igual, con un proyecto recién asignado (sin actualización todavía). |
+| Frances Aviña | Usuario | Nóminas | Un proyecto atrasado y uno cancelado, para ver esos estados. |
+
+Flujo sugerido para probar el ciclo completo:
+
+1. Sin iniciar sesión, ve a **"Registrar una solicitud sin iniciar sesión"** en la
+   pantalla de acceso (`/#/publico/nueva-solicitud`) y registra una solicitud nueva
+   (duración > 30 días). Copia el folio.
+2. En **"Consultar estatus"** (`/#/publico/consultar`), consúltala con el folio y el
+   correo — verás el historial de estados.
+3. Entra como **Andrea Bautista** (o el líder del área que sugeriste) → **Solicitudes
+   del área** → abre la solicitud → **Iniciar revisión → Aprobar → Enviar a
+   asignación** → asigna responsable, equipo, fechas y prioridad → se crea el proyecto.
+4. Entra como el **usuario responsable** asignado → **Mis proyectos** → abre el
+   proyecto → pestaña **Seguimiento**: registra avance, marca un bloqueo si quieres, y
+   adjunta una evidencia.
+5. Entra de nuevo como **líder/administrador** → **Validación de evidencias**: valida o
+   rechaza la evidencia cargada → **Alertas**: revisa atrasados/bloqueados/sin
+   actualización.
+
+Los cambios se guardan en el `localStorage` del navegador; puedes restablecer todo a
+los datos originales desde **Administración → Catálogos → Restablecer datos de
+demostración**.
+
+## Roles y permisos (resumen)
+
+La matriz completa vive en `src/lib/permissions.ts` y se visualiza en
+**Administración → Roles y permisos**. Resumen:
+
+- **Usuario:** ve solo sus proyectos asignados, registra avance/comentarios/evidencias,
+  consulta historial. No asigna integrantes, no aprueba solicitudes, no cambia roles ni
+  elimina proyectos.
+- **Líder:** ve y dictamina solicitudes de su área, asigna/reasigna responsables,
+  define fechas y prioridad, valida evidencias, cambia el estado operativo, consulta
+  carga de trabajo y alertas de su área. No administra áreas ajenas ni cambia roles
+  globales.
+- **Administrador:** todo lo anterior sobre cualquier área, más gestión de usuarios,
+  roles, áreas, líderes, catálogos y auditoría global.
+
+**Importante — esto es solo UX.** Los *guards* de ruta (`src/components/gestion/RouteGuard.tsx`)
+y los `if` de permisos solo ocultan/redirigen en el navegador. Cuando este módulo se
+conecte a un backend real (n8n u otro), cada operación de escritura debe volver a
+validar el rol del lado del servidor — nunca confiar solo en lo que oculta el frontend.
+
+## Catálogo de estados (13 estados, centralizado)
+
+Definido una sola vez en `src/lib/catalog.ts` (colores, orden, agrupación y
+transiciones permitidas) y usado por todas las pantallas:
+
+`Solicitud recibida → En revisión → Requiere ajustes | Aprobada → Pendiente de
+asignación → Asignada → En planeación → En ejecución → Bloqueada | En validación →
+Finalizada`, con `Rechazada` y `Cancelada` como estados de cierre alternos.
+
+Cada cambio de estado (de una solicitud o de un proyecto) queda registrado en
+`StatusHistory` con fecha, usuario, estado anterior, estado nuevo y comentario —
+visible en la pestaña **Historial** de cada proyecto y en la consulta pública de
+estatus.
+
+## Modelo de datos (frontend)
+
+`src/lib/types.ts` centraliza las interfaces (sin `any`): `User`, `Role`, `Area`,
+`Project`, `ProjectRequest`, `ProjectAssignment`, `ProgressUpdate`, `Evidence`,
+`Comment`, `StatusHistory`, `Notification`, `AuditEntry` (además de los tipos ya
+existentes de los contratos PBI-01 a PBI-07). `src/lib/demoStore.ts` es la única fuente
+de verdad de estos datos en esta versión (persistida en `localStorage`); las pantallas
+nunca mutan datos directamente, solo llaman a las funciones exportadas de ese archivo.
+
+## Datos de demostración incluidos
+
+- **4 áreas**: Inteligencia de Negocios, Operaciones, Nóminas (sin líder asignado a
+  propósito, para poder probar "Asignar líder" como administrador) y Dirección de
+  Tecnología.
+- **8 personas**: 1 administrador, 2 líderes, 5 usuarios (ver tabla arriba). Ningún
+  correo es real; todos usan el dominio `@iccorp-demo.mx`.
+- **10 proyectos** con estados variados: atrasado, bloqueado, próximo a vencer, sin
+  actualización reciente, en validación, finalizado y cancelado.
+- **15 solicitudes** en distintos estados del catálogo (recibida, en revisión, requiere
+  ajustes, aprobada, rechazada, pendiente de asignación, asignada).
+- Evidencias, comentarios, historial de estados, notificaciones y bitácora de
+  auditoría de ejemplo.
 
 ## Requisitos
 
@@ -43,27 +138,14 @@ npm install
 cp .env.example .env
 ```
 
-`.env` **nunca** se sube al repositorio (está en `.gitignore`: `.env`, `.env.*`, con
-excepción explícita de `!.env.example`) y tampoco se incluye en los ZIP de entrega —
-solo `.env.example` se versiona y se entrega. Cada persona que clone o descargue el
-proyecto debe crear su propio `.env` local a partir de `.env.example`.
+`.env` **nunca** se sube al repositorio (está en `.gitignore`). Las URLs de
+`.env.example` para PBI-01 a PBI-07 son las de producción real de n8n
+(`jmejiaromero.app.n8n.cloud`); normalmente no hace falta cambiarlas. Si falta alguna,
+esa pantalla específica cae a modo demostración local (ver
+`src/lib/pbiDemoFallback.ts`) en vez de fallar o quedar en blanco.
 
-Las URLs en `.env.example` ya son las URLs de PRODUCCIÓN reales de n8n
-(`jmejiaromero.app.n8n.cloud`) — normalmente no necesitas cambiarlas. `src/lib/config.ts`
-ya **no** tiene URLs de producción "hardcodeadas" como respaldo: las URLs se leen
-exclusivamente de las variables `VITE_PBI01_URL` … `VITE_PBI07_URL`. Si falta alguna,
-la app no arranca en silencio con una URL equivocada — muestra una pantalla de error
-clara (`ConfigError`) listando exactamente qué variable falta.
-
-Si tu administrador te da una `x-api-key` para los endpoints privados (PBI-01, 03, 04,
-05), puedes ponerla en `VITE_DEFAULT_API_KEY`, o pegarla directamente en la app desde
-el menú "Configuración" (campo de tipo contraseña, con botón para mostrar/ocultar; se
-guarda en el `localStorage` del navegador y tiene prioridad sobre la variable de
-entorno).
-
-Mientras `PBI_API_KEY` no esté configurada del lado de n8n, esos endpoints operan en
-modo "fail-open" (aceptan la llamada aunque la clave esté vacía), así que la app
-funciona igual sin la clave — ver el README del backend para más detalle.
+`VITE_PROJECTS_REQUEST_URL` es nueva y opcional (ver sección de arriba): déjala vacía
+mientras el módulo de proyectos siga en modo demo.
 
 ## Ejecutar en desarrollo
 
@@ -71,17 +153,14 @@ funciona igual sin la clave — ver el README del backend para más detalle.
 npm run dev
 ```
 
-Abre `http://localhost:5173`. Esto llama a los webhooks reales de n8n desde tu propio
-navegador (no hay mocks ni servidor intermedio).
-
 ## Compilar (build de producción)
 
 ```bash
 npm run build
 ```
 
-Genera la carpeta `dist/` optimizada y estática, lista para publicarse en cualquier
-hosting estático (GitHub Pages, Netlify, S3, etc.).
+Ejecuta `tsc -b` (sin errores de TypeScript permitidos) y luego `vite build`, generando
+`dist/` lista para publicarse en cualquier hosting estático.
 
 ## Previsualizar el build
 
@@ -89,322 +168,226 @@ hosting estático (GitHub Pages, Netlify, S3, etc.).
 npm run preview
 ```
 
-Sirve `dist/` localmente en `http://localhost:4173` para verificar el build de
-producción antes de publicarlo.
-
 ## Publicar en GitHub Pages (repositorio IC-Academy/Gesti-n-IC)
 
-Este proyecto se publica sobre el repositorio ya existente
-**https://github.com/IC-Academy/Gesti-n-IC**, en la URL
-**https://ic-academy.github.io/Gesti-n-IC/**.
+`vite.config.ts` trae `base: "/Gesti-n-IC/"` como valor por defecto (respetando
+mayúsculas/minúsculas exactas). El workflow `.github/workflows/deploy.yml`:
 
-`vite.config.ts` ya trae `base: "/Gesti-n-IC/"` como valor por defecto (respetando
-mayúsculas/minúsculas exactas, ya que GitHub Pages distingue la ruta), así que no hace
-falta pasar `VITE_BASE_PATH` a mano salvo que se quiera servir desde otra ruta.
-
-### Método preferido: GitHub Actions (`.github/workflows/deploy.yml`)
-
-El repositorio incluye un workflow listo en `.github/workflows/deploy.yml` que:
-
-1. Se dispara automáticamente en cada `push` a `main` (y también admite disparo manual
-   desde la pestaña **Actions** vía `workflow_dispatch`).
-2. Instala dependencias con `npm ci`.
-3. Ejecuta `npm run build` — si el build falla (error de TypeScript, de Vite, etc.), el
-   job falla y **no se publica nada**.
-4. Sube `dist/` como artefacto de Pages (`actions/upload-pages-artifact`) y lo despliega
-   con `actions/deploy-pages`.
+1. Se dispara en cada `push` a `main` (o manualmente desde **Actions**).
+2. `npm ci` → `npm run build` (si el build falla, no se publica nada).
+3. Sube `dist/` como artefacto de Pages y lo despliega con `actions/deploy-pages`.
 
 Antes del primer despliegue, configurar en el repositorio:
 
 - **Settings → Pages → Source = "GitHub Actions"** (no "Deploy from a branch").
-- **Settings → Secrets and variables → Actions → Variables**, agregar las 7 variables
-  con las URLs reales de los webhooks (ver sección "Variables de entorno requeridas
-  para el build de CI" más abajo).
-- Si se usa `VITE_DEFAULT_API_KEY`, agregarla en la pestaña **Secrets** (no en
-  Variables), ya que ese valor sí es sensible.
+- **Settings → Secrets and variables → Actions → Variables**: las 7 variables
+  `VITE_PBI0X_URL` (ver tabla más abajo). `VITE_PROJECTS_REQUEST_URL` es opcional.
+- Si se usa `VITE_DEFAULT_API_KEY`, agregarla como **Secret** (no como Variable).
 
-Con eso configurado, cada `git push origin main` recompila y republica el sitio
-automáticamente; no se requiere ningún paso manual adicional.
+### HashRouter — por qué no hay pantalla en blanco al refrescar
 
-### Alternativa: `gh-pages` (publicación manual desde tu máquina)
-
-Si se prefiere no usar Actions, el script `npm run deploy` (paquete `gh-pages`) sigue
-disponible como alternativa manual:
-
-```bash
-npm run deploy
-```
-
-Esto compila (`predeploy`) y sube el contenido de `dist/` a la rama `gh-pages`. En ese
-caso, **Settings → Pages → Source** debe apuntar a la rama `gh-pages` en vez de a
-"GitHub Actions". No usar ambos métodos a la vez para evitar publicaciones que se
-pisen entre sí.
-
-### HashRouter
-
-La app usa `HashRouter` (rutas con `#`, por ejemplo `.../#/bandeja`) precisamente para
-funcionar de forma confiable en GitHub Pages sin necesitar configuración de
-reescritura de rutas en el servidor ni el truco del `404.html`. Bajo
-`https://ic-academy.github.io/Gesti-n-IC/`, las rutas quedan como:
-
-- `https://ic-academy.github.io/Gesti-n-IC/#/bandeja`
-- `https://ic-academy.github.io/Gesti-n-IC/#/registrar` (registrar solicitud)
-- `https://ic-academy.github.io/Gesti-n-IC/#/consultar` (consultar solicitud)
-- `https://ic-academy.github.io/Gesti-n-IC/#/autorizaciones` (Centro de autorizaciones;
-  también acepta `?token=TOKEN` para autocompletar el token desde el correo)
-
-Los enlaces profundos y el refresco de página (F5) funcionan correctamente con esta
-configuración.
+La app usa `HashRouter` (rutas con `#`, p. ej. `.../#/proyectos`). GitHub Pages sirve
+siempre el mismo `index.html`; como la ruta "real" para el servidor nunca cambia (todo
+lo que va después de `#` lo interpreta React Router ya dentro del navegador), **no
+hace falta el truco del `404.html`** ni configuración de reescritura de rutas.
+Refrescar cualquier pantalla profunda (por ejemplo
+`.../#/proyectos/proj-0005?tab=historial`) siempre carga la aplicación completa. Una
+ruta que no existe cae en una pantalla 404 propia (`src/routes/general/NotFound.tsx`),
+nunca en blanco.
 
 ## Variables de entorno requeridas para el build de CI
 
-El workflow de GitHub Actions (y cualquier build de producción) necesita estas 7
-variables definidas como **Repository variables** (Settings → Secrets and variables →
-Actions → Variables) para que `npm run build` no falle con el error de `ConfigError`:
-
-| Variable | Webhook |
+| Variable | Uso |
 |---|---|
-| `VITE_PBI01_URL` | PBI-01 Registrar Solicitud |
-| `VITE_PBI02_URL` | PBI-02 Consultar Solicitud |
-| `VITE_PBI03_URL` | PBI-03 Listar Solicitudes / Bandeja BI |
-| `VITE_PBI04_URL` | PBI-04 Guardar Evaluación BI |
-| `VITE_PBI05_URL` | PBI-05 Enviar a Autorización / Microinforme |
-| `VITE_PBI06_URL` | PBI-06 Consultar Aprobación por token |
-| `VITE_PBI07_URL` | PBI-07 Registrar Decisión de aprobador |
+| `VITE_PBI01_URL` … `VITE_PBI07_URL` | Webhooks reales de n8n (solicitudes BI). Si faltan, esas pantallas caen a modo demo local (no bloquean el build ni la app). |
+| `VITE_DEFAULT_API_KEY` | Opcional; `x-api-key` por defecto para los endpoints privados PBI-01/03/04/05. Configurar como **Secret**, no como Variable. |
+| `VITE_PROJECTS_REQUEST_URL` | Opcional; webhook futuro para el Portal del Solicitante nuevo (módulo de Proyectos). Vacío = modo demo. |
+| `VITE_BASE_PATH` | Opcional; ya tiene `"/Gesti-n-IC/"` por defecto en `vite.config.ts`. |
 
-Los valores exactos están en `.env.example`. `VITE_DEFAULT_API_KEY` es opcional y, si
-se usa, debe configurarse como **Secret** (no como Variable) porque sí es sensible.
-`VITE_BASE_PATH` no es necesario definirlo en CI: `vite.config.ts` ya trae
-`"/Gesti-n-IC/"` como valor por defecto.
+## Payloads documentados
 
-Si falta cualquiera de las 7 variables anteriores, la app no arranca en silencio con
-una URL equivocada: `src/lib/config.ts` ya no tiene URLs de producción
-"hardcodeadas" como respaldo, y `App.tsx` muestra una pantalla `ConfigError` listando
-exactamente qué variable falta.
+### Módulo nuevo — Nueva solicitud de proyecto (`VITE_PROJECTS_REQUEST_URL`)
 
-## CORS — restringido al origen definitivo de GitHub Pages
+Ver el bloque de comentarios en `src/lib/projectsApi.ts`. Resumen del `POST` (JSON):
 
-Los 7 webhooks de n8n (PBI-01 a PBI-07) están configurados con
-`Options → Allowed Origins (CORS) = https://ic-academy.github.io` (origen exacto, sin
-`/Gesti-n-IC/`, sin rutas, sin `#` ni parámetros — así es como los navegadores envían el
-encabezado `Origin`). Esto ya está aplicado y publicado en los 7 workflows.
-
-Notas importantes sobre este valor:
-
-- El origen **no incluye** la ruta del repositorio (`/Gesti-n-IC/`): CORS solo compara
-  esquema + host + puerto, nunca la ruta. `https://ic-academy.github.io` es correcto
-  para cualquier ruta bajo ese dominio, incluyendo `/Gesti-n-IC/`.
-- Si en algún momento se necesita seguir probando localmente
-  (`http://localhost:5173`), hay que agregar ese origen también, separado por coma,
-  en el nodo Webhook de cada workflow (`Options → Allowed Origins`), por ejemplo:
-  `https://ic-academy.github.io,http://localhost:5173`.
-- Si se publica una versión de prueba en otro dominio (por ejemplo un preview de
-  Netlify), ese origen también debe agregarse explícitamente o las llamadas
-  `fetch()` fallarán por CORS desde ese dominio.
-
-La protección real contra escrituras no autorizadas sigue siendo la `x-api-key` (ver
-sección de Seguridad más abajo); restringir el CORS es una capa adicional que evita
-que páginas de terceros hagan llamadas silenciosas a estos webhooks desde el
-navegador de un usuario.
-
-## ⚠️ Seguridad — advertencia técnica importante
-
-Este frontend es un sitio **estático** (HTML/JS/CSS servido desde GitHub Pages, sin
-servidor propio). La `x-api-key` que protege los endpoints privados de n8n (PBI-01,
-03, 04, 05) se guarda en el `localStorage` del navegador de quien la haya pegado en el
-menú "Configuración", y viaja en cada `fetch()` como encabezado `x-api-key`.
-
-**Una API key almacenada y usada así en un frontend estático NO constituye
-autenticación segura**, por las siguientes razones:
-
-- Cualquier persona con acceso a las herramientas de desarrollador del navegador (o al
-  propio `localStorage`) puede leer la clave en texto plano.
-- La clave es la misma para todas las personas que la usan: no hay identidad
-  individual, no hay expiración, no hay revocación por usuario, no hay registro de
-  quién hizo qué.
-- No hay control de acceso por rol: quien tenga la clave puede llamar a cualquiera de
-  los endpoints privados, no solo a los que le correspondan por su función.
-
-Esto es aceptable para una **fase piloto interna** con un grupo reducido y de
-confianza (como la actual), pero **no es aceptable para una versión productiva** con
-más usuarios o datos sensibles. Antes de considerar este portal "productivo", se debe
-reemplazar este esquema por una capa de autenticación real, por ejemplo:
-
-- **Microsoft Entra ID** (Azure AD) con OAuth2/OIDC y un backend (aunque sea mínimo,
-  tipo Azure Function o API Management) que valide el token antes de reenviar la
-  petición a n8n — así cada usuario tiene su propia identidad y los permisos se
-  pueden auditar.
-- **Cloudflare Access** (o equivalente) delante del dominio de GitHub Pages y/o de los
-  webhooks de n8n, exigiendo login corporativo (SSO) antes de servir cualquier
-  contenido o aceptar cualquier llamada.
-- Cualquier capa autenticada equivalente que reemplace la clave compartida por
-  identidad individual verificable.
-
-Los endpoints públicos sin `x-api-key` (PBI-02 Consultar Solicitud, PBI-06 Consultar
-Aprobación, PBI-07 Registrar Decisión) están diseñados así intencionalmente: se
-protegen con un folio+correo+código de consulta (PBI-02) o con un token de un solo uso
-con expiración (PBI-06/07), no con la API key compartida. Esa parte del diseño es
-razonable tal cual está; lo que requiere reforzarse antes de producción es el acceso
-del Analista BI a los endpoints privados de escritura.
-
-## Enlace de aprobación por correo (token en la URL)
-
-El Centro de Autorizaciones (`/#/autorizaciones`) acepta el token directamente en la
-URL: `/#/autorizaciones?token=TOKEN`. Si la pantalla se abre con ese parámetro, lee el
-token automáticamente y consulta PBI-06 sin que el aprobador tenga que copiar/pegar
-nada. El campo de token manual se mantiene visible como alternativa (por si el enlace
-no funciona o el aprobador prefiere pegar el token a mano).
-
-El correo que genera PBI-05 (nodo "Generar Token y Microinforme") ya construye este
-enlace (`approvalUrl = PORTAL_BASE_URL + '/#/autorizaciones?token=' + token`) y lo usa
-como botón principal ("Revisar y decidir") en el cuerpo del correo, con el enlace de
-texto plano y el token en crudo como respaldo. **`PORTAL_BASE_URL` ya tiene el valor
-definitivo**: `'https://ic-academy.github.io/Gesti-n-IC'` (sin slash final; el propio
-código del nodo agrega `/#/autorizaciones?token=...`). Ya no queda ningún placeholder
-tipo `https://REEMPLAZAR-CON-TU-DOMINIO-GITHUB-PAGES` en el workflow publicado.
-
-## Vista previa del microinforme antes de enviar
-
-En Evaluación BI, el botón "Revisar microinforme y enviar" ya no dispara PBI-05
-directamente: abre primero una vista previa con el contenido exacto que recibirán
-Armando y Gabriel (diagnóstico, solución propuesta, viabilidad, complejidad, horas,
-riesgos, dependencias, prioridad sugerida, recomendación y fechas aproximadas — los
-mismos campos que arma el nodo de PBI-05), más el encabezado de la solicitud (folio,
-proyecto, área, solicitante) obtenido en vivo de PBI-03. El Analista BI debe confirmar
-explícitamente ("Confirmar y enviar a Armando y Gabriel") para que se ejecute el envío
-real; puede cancelar sin que se dispare nada.
-
-## Bloqueo de tokens ya utilizados (doble respuesta)
-
-El Centro de Autorizaciones ahora distingue tres estados al consultar un token
-(PBI-06):
-
-1. **Token pendiente** (`decisionPrevia === 'Pendiente'` o vacío): se muestra el
-   microinforme y el formulario normal de "Registrar decisión".
-2. **Token ya respondido** (`decisionPrevia` tiene cualquier otro valor, por ejemplo
-   `Aprobar` o `Rechazar`): el formulario **se oculta por completo** y en su lugar se
-   muestra la tarjeta "Esta autorización ya fue respondida" con la decisión
-   registrada. No es posible intentar enviar una segunda decisión desde la interfaz.
-3. **Token inválido, usado o expirado** (validado del lado del servidor): PBI-07
-   sigue siendo, como antes, la última línea de defensa — el nodo "Validar Vigencia
-   Token" rechaza con `410 Token ya fue utilizado` o `410 Token expirado` incluso si,
-   por algún motivo, la interfaz llegara a enviar una segunda solicitud. Esto no
-   cambió con esta ronda de ajustes: ya funcionaba así antes y se verificó de nuevo
-   al revisar el workflow.
-
-## Evidencia de build exitoso
-
-```
-> gestion-ic@1.0.0-demo build
-> tsc -b && vite build
-
-vite v8.2.0 building client environment for production...
-✓ 2461 modules transformed.
-dist/index.html                   0.48 kB │ gzip:   0.32 kB
-dist/assets/index-PFb4QOie.css   24.22 kB │ gzip:   5.76 kB
-dist/assets/index-C_8sAkbp.js   731.80 kB │ gzip: 217.10 kB
-✓ built in 4.57s
+```jsonc
+{
+  "folio": "GIC-SOL-2026-1001",
+  "nombreSolicitante": "string",
+  "correoSolicitante": "string",
+  "areaSolicitante": "string",
+  "nombreProyecto": "string",
+  "descripcion": "string",
+  "problemaONecesidad": "string",
+  "objetivo": "string",
+  "beneficioEsperado": "string",
+  "fechaInicioDeseada": "2026-09-01T00:00:00.000Z",
+  "fechaTerminoEstimada": "2026-12-15T00:00:00.000Z",
+  "prioridad": "Baja | Media | Alta | Crítica",
+  "areaResponsableSugerida": "string",
+  "comentariosAdicionales": "string opcional",
+  "archivosIniciales": [{ "nombreArchivo": "string", "tipo": "mime/type", "tamanoBytes": 0 }],
+  "creadoEn": "2026-08-17T00:00:00.000Z"
+}
 ```
 
-`npm run preview` sirvió `dist/` correctamente en `http://localhost:4173` (`curl` local
-respondió `HTTP 200`). Build re-verificado el 2026-08-05 después de la ronda de
-ajustes de seguridad/UX (token en URL, vista previa del microinforme, remoción de
-fallbacks de URL, `.env` excluido).
+Respuesta esperada: `{ "ok": boolean, "error"?: string }`. Es una llamada "best
+effort": si falla o el webhook no existe, la solicitud igual queda registrada en el
+demo store local y la persona que la registró no ve ningún error.
 
-## Evidencia de prueba real contra n8n
+### PBI-01 a PBI-07 (real, sin cambios)
 
-El entorno de trabajo donde se construyó este proyecto tiene una salida de red
-restringida por allowlist (no permite `curl`/`fetch` directo desde ese sandbox hacia
-`jmejiaromero.app.n8n.cloud`). Para verificar que los contratos de request/response que
-implementa el frontend (`src/lib/api.ts`, `src/lib/types.ts`) coinciden exactamente con
-las respuestas reales del backend, se ejecutaron los workflows reales de n8n
-directamente (vía la API de administración de n8n) con el mismo payload que envía el
-frontend:
-
-- **PBI-02 Consultar Solicitud** (ejecución `2382`, éxito): payload
-  `{ folio: "SOL-20260805-211949740-9DK1", correo: "ana.torres@intercon.com.mx", codigo: "D41YYFEB" }`
-  (folio piloto real de Fase 2) → respuesta 200 con los datos reales de la solicitud
-  ("Dashboard de Cartera Vencida Regional", estado "Aprobada urgente"), con exactamente
-  los campos que `ConsultarSolicitudResponse` espera.
-- **PBI-03 Listar Solicitudes** (ejecución `2383`, éxito): payload
-  `{ estados: [], area: "" }` con header `x-api-key` vacío (modo fail-open) → respuesta
-  200 con un arreglo `solicitudes` cuyos objetos tienen exactamente los campos que
-  `SolicitudBandeja` espera (`recordId`, `folio`, `proyecto`, `area`, `solicitante`,
-  `fechaSolicitud`, `fechaRequerida`, `urgencia`, `estado`, `diasSinAtender`, `accion`).
-
-Esto confirma que los tipos y el parseo del frontend son correctos contra las
-respuestas reales. Lo único que no pudo ejecutarse desde este entorno de construcción
-es la llamada `fetch()` real desde un navegador (por el firewall de salida del
-sandbox) — se recomienda que, al correr `npm run dev` en una máquina con acceso normal
-a internet (o al abrir la versión publicada en GitHub Pages), se haga clic en cada
-pantalla una vez para confirmar visualmente que el CORS configurado en n8n permite las
-llamadas del navegador. Los 7 webhooks ya tienen `Allowed Origins = *` configurado
-específicamente para esto (recordatorio: restringir antes de producción, ver sección
-CORS más abajo).
-
-### Prueba del enlace de aprobación completo (token en URL → PBI-06)
-
-Tras agregar el botón de aprobación con token embebido en el correo (PBI-05), se
-re-probó el flujo completo contra datos reales de Airtable (folio piloto
-`SOL-20260805-211949740-9DK1`, reutilizando el mismo registro de la Fase 2 y
-restaurando su estado original al terminar la prueba):
-
-1. **PBI-05** (ejecución `2384`, éxito): payload
-   `{ folio: "SOL-20260805-211949740-9DK1", enviadoPor: "Jorge Mejia (prueba revision)" }`
-   → generó un token de un solo uso por cada aprobador activo (Gabriel Sabogal,
-   Armando Acosta) y un `approvalUrl` con la forma
-   `https://REEMPLAZAR-CON-TU-DOMINIO-GITHUB-PAGES/#/autorizaciones?token=<token>`,
-   incluido como botón "Revisar y decidir" en el HTML del correo (verificado en la
-   salida completa del nodo "Generar Token y Microinforme").
-2. **PBI-06** (ejecución `2385`, éxito): se tomó el token real generado en el paso
-   anterior y se llamó a Consultar Aprobación con
-   `{ token: "m6YGJ7TPG8CMc9H2ev6hHR5SMaT7nxw3QUR82kAe" }` → respondió 200 con el
-   microinforme correcto (folio, proyecto, área, solicitante, diagnóstico, solución
-   propuesta, etc.), confirmando que el token que viaja en la URL del correo es
-   exactamente el que el Centro de Autorizaciones necesita para el auto-consulta al
-   cargar `/#/autorizaciones?token=...`.
-
-No fue posible hacer clic físicamente en el botón del correo desde este entorno (el
-correo real no se envía mientras `SEND_REAL_EMAILS=false`, y el sandbox de este
-entorno no tiene salida de red hacia `n8n.cloud` para un `fetch()` de navegador real),
-pero la cadena completa token-generado-por-PBI-05 → token-aceptado-por-PBI-06 quedó
-verificada extremo a extremo contra el backend real, que es la parte que realmente
-importa para garantizar que el enlace del correo funcionará una vez publicado el
-frontend con la `PORTAL_BASE_URL` correcta.
-
-## Modo seguro de correos (SEND_REAL_EMAILS)
-
-El frontend no envía correos directamente; los correos los envía n8n. Todos los
-workflows relevantes (PBI-01, PBI-05, PBI-07) tienen la constante
-`SEND_REAL_EMAILS = false` en sus nodos de preparación de envío, por lo que **todas**
-las notificaciones (incluidas las dirigidas a los aprobadores) se redirigen a un
-correo interno de validación con un aviso `[PRUEBA]` y el destinatario original
-declarado en el cuerpo. Esto se mantiene así intencionalmente hasta que se valide
-expresamente el envío real — no requiere ningún cambio en el frontend.
+Los contratos completos (payload y respuesta exactos) están en `src/lib/types.ts`
+(interfaces `RegistrarSolicitudPayload/Response`, `ConsultarSolicitudPayload/Response`,
+etc.) y se implementan en `src/lib/api.ts`. No se modificaron en esta ronda de
+cambios; ver la sección "Anexo: integración PBI-01..07" más abajo para el historial
+completo de verificación contra el backend real.
 
 ## Estructura del proyecto
 
 ```
 src/
   lib/
-    config.ts     URLs de los webhooks, x-api-key y "evaluado por" en localStorage
-    types.ts      Tipos de los contratos reales de PBI-01 a PBI-07
-    api.ts        Cliente fetch tipado para cada webhook
-  components/      Layout, ConfigError, Badge, Button, Card, Field, States (loading/error/empty)
+    types.ts            Tipos de PBI-01..07 (sin cambios) + modelo nuevo (User, Project, ...)
+    catalog.ts           Catálogo centralizado de 13 estados, prioridades, transiciones
+    permissions.ts        Matriz de permisos por rol (Usuario/Líder/Administrador)
+    demoStore.ts          "Base de datos" demo (localStorage) + mutaciones tipadas
+    demoSelectors.ts       Consultas derivadas (KPIs, atrasados, carga de trabajo, ...)
+    session.tsx            Sesión demo (selección de persona) — sustituir por auth real
+    projectsApi.ts          Notificación best-effort a n8n para el módulo nuevo (opcional)
+    pbiDemoFallback.ts       Modo demo local para PBI-01..07 si falta la URL real
+    config.ts / api.ts        Config y cliente fetch de los webhooks reales (sin cambios de contrato)
+  components/
+    Layout.tsx            Sidebar + header con navegación por rol y notificaciones
+    PortalShell.tsx         Encabezado del portal público (sin sesión)
+    gestion/                Componentes del módulo nuevo (StatusBadge, KpiRow, EvidenceUploader,
+                             RouteGuard, NotificationBell, ProgressBar, Alert, ModeTag)
+    Badge/Button/Card/Field/States/ConfigError   Componentes genéricos ya existentes
   routes/
-    BandejaBI.tsx              PBI-03
-    RegistrarSolicitud.tsx     PBI-01
-    ConsultarSolicitud.tsx     PBI-02
-    EvaluacionBI.tsx           PBI-04 + PBI-05
-    CentroAutorizaciones.tsx   PBI-06 + PBI-07
-  App.tsx          Rutas (HashRouter)
+    Acceso.tsx             Login demo (selección de persona)
+    Dashboard.tsx            Dashboard único, adapta KPIs/paneles según el rol
+    general/                 Perfil, RecuperarAcceso (simulada), NotFound (404)
+    portal/                  Nueva solicitud + Consultar estatus (portal del solicitante nuevo)
+    proyecto/                Lista de proyectos por alcance + Detalle (tabs: Resumen/
+                              Seguimiento/Evidencias/Historial)
+    solicitud/                Lista de solicitudes por alcance + Detalle con dictamen/asignación
+    lider/                    Asignación, Carga de trabajo, Validación de evidencias, Alertas
+    admin/                    Usuarios, Roles y permisos, Áreas y líderes, Catálogos, Auditoría
+    BandejaBI.tsx / RegistrarSolicitud.tsx / ConsultarSolicitud.tsx / EvaluacionBI.tsx /
+      CentroAutorizaciones.tsx     Flujo real PBI-01..07, sin cambios de lógica (solo de ruta)
+  App.tsx                 Rutas (HashRouter): público, autenticado y guards por rol
 ```
 
-## No mocks, no backend propio, no Airtable directo
+## Resumen de archivos creados y modificados en esta ronda
 
-- Ninguna pantalla usa datos de ejemplo como fuente principal: todo viene de la
-  respuesta real de los webhooks.
-- No hay ningún servidor propio (Node/Express, Supabase, etc.): solo archivos
-  estáticos que llaman `fetch()` a n8n.
+**Nuevos (módulo de Gestión de Proyectos):** `src/lib/catalog.ts`, `permissions.ts`,
+`demoStore.ts`, `demoSelectors.ts`, `session.tsx`, `projectsApi.ts`,
+`pbiDemoFallback.ts`; `src/components/PortalShell.tsx` y todo `src/components/gestion/*`;
+`src/routes/Acceso.tsx`, `Dashboard.tsx`, `general/*`, `portal/*`, `proyecto/*`,
+`solicitud/*`, `lider/*`, `admin/*`.
+
+**Modificados:** `src/App.tsx` (árbol de rutas completo con guards), `src/components/Layout.tsx`
+(navegación por rol, notificaciones, perfil), `src/lib/types.ts` (se agregó el modelo
+nuevo al final, sin tocar los tipos PBI existentes), `src/lib/api.ts` (fallback a modo
+demo cuando falta una URL `VITE_PBI0X_URL`, aditivo — el comportamiento con URL
+configurada no cambió), `.env.example` y este `README.md`.
+
+**Sin cambios de lógica/contrato:** `src/lib/config.ts`, `src/routes/BandejaBI.tsx`,
+`RegistrarSolicitud.tsx`, `ConsultarSolicitud.tsx`, `EvaluacionBI.tsx`,
+`CentroAutorizaciones.tsx` (solo se movieron de ruta, de `/registrar` etc. a
+`/bi/registrar` etc., para agrupar visualmente la integración real con n8n aparte del
+módulo nuevo — no afecta a n8n ya que las rutas del frontend no forman parte de
+ningún contrato con el backend).
+
+**Eliminado:** `src/routes/GestionDemo.tsx` — era una maqueta estática (datos
+hardcodeados, sin modelo de datos ni permisos reales) que representaba las mismas
+pantallas (Resumen, Proyectos, Equipo, Administración) ahora implementadas de verdad en
+`Dashboard.tsx`, `proyecto/*`, `lider/CargaTrabajo.tsx` y `admin/*`.
+
+## ⚠️ Seguridad — advertencia técnica importante
+
+Este frontend es un sitio **estático** (HTML/JS/CSS servido desde GitHub Pages, sin
+servidor propio). Dos capas de seguridad a tener en cuenta:
+
+**1) `x-api-key` de PBI-01/03/04/05** (sin cambios respecto a la versión anterior): se
+guarda en `localStorage` y viaja en cada `fetch()`. No constituye autenticación real
+por persona — ver detalle histórico más abajo. Aceptable para piloto interno, no para
+producción con más usuarios.
+
+**2) Guards de rol del módulo de Gestión de Proyectos:** ocultan/deshabilitan acciones
+en el navegador (ver `src/lib/permissions.ts`), pero no hay backend que las repita. Con
+las herramientas de desarrollador, cualquier persona podría alterar el estado del
+navegador. Antes de producción, cualquier backend real que reciba estas acciones
+(aprobar, asignar, cambiar rol, eliminar) **debe volver a validar el rol del lado del
+servidor**.
+
+Antes de considerar este portal "productivo" en cualquiera de los dos módulos, se debe
+reemplazar la autenticación simulada por identidad real (Microsoft Entra ID u
+equivalente) con un backend que valide cada operación.
+
+## No mocks como fuente de verdad silenciosa, no Airtable directo
+
+- El flujo PBI-01..07 nunca usa datos de ejemplo como fuente principal: todo viene de
+  la respuesta real de los webhooks (con un fallback demo explícito y visible solo si
+  falta configuración).
+- El módulo de Gestión de Proyectos usa `localStorage` como fuente de verdad en esta
+  primera versión, siempre marcado como "Datos de demostración" en la interfaz.
 - El frontend nunca llama a la API de Airtable directamente ni contiene su token; todo
-  pasa por los webhooks de n8n.
+  pasa (o pasaría) por webhooks de n8n.
+
+---
+
+## Anexo: integración real PBI-01 a PBI-07 (histórico, sin cambios)
+
+Las siguientes secciones documentan el trabajo de verificación realizado
+originalmente contra el backend real de n8n/Airtable. Se conservan tal cual porque
+siguen siendo válidas: no se tocó ningún contrato, payload, tipo ni lógica de estas
+pantallas en esta ronda (solo se reorganizaron sus rutas bajo `/bi/...` y se les agregó
+un fallback de modo demo cuando falta la URL, ver `src/lib/pbiDemoFallback.ts`).
+
+### Pantallas
+
+| Ruta actual | Pantalla | Webhook(s) que usa |
+|---|---|---|
+| `/bi/bandeja` | Bandeja BI | PBI-03 `pbi/solicitudes/listar` |
+| `/bi/registrar` | Registrar solicitud | PBI-01 `pbi/solicitudes` |
+| `/bi/consultar` | Consultar solicitud | PBI-02 `pbi/solicitudes/consultar` |
+| `/bi/evaluacion/:folio` | Evaluación BI + envío a autorización (microinforme) | PBI-04, PBI-05 |
+| `/bi/autorizaciones` | Centro de autorizaciones | PBI-06, PBI-07 |
+
+### CORS
+
+Los 7 webhooks de n8n están configurados con `Allowed Origins =
+https://ic-academy.github.io` (origen exacto; CORS no compara la ruta, solo
+esquema+host+puerto). Para pruebas locales agregar también `http://localhost:5173`
+separado por coma en el nodo Webhook de cada workflow.
+
+### Enlace de aprobación por correo (token en la URL)
+
+`/#/bi/autorizaciones?token=TOKEN` autocompleta el token desde el correo generado por
+PBI-05 (`PORTAL_BASE_URL = 'https://ic-academy.github.io/Gesti-n-IC'`).
+
+### Bloqueo de tokens ya utilizados
+
+El Centro de Autorizaciones distingue: token pendiente (formulario normal), token ya
+respondido (formulario oculto, se muestra la decisión registrada) y token
+inválido/usado/expirado (rechazado por PBI-07 del lado del servidor como última línea
+de defensa).
+
+### Modo seguro de correos (SEND_REAL_EMAILS)
+
+Todos los workflows relevantes (PBI-01, PBI-05, PBI-07) mantienen
+`SEND_REAL_EMAILS = false`: las notificaciones se redirigen a un buzón interno de
+validación con aviso `[PRUEBA]`. No requiere cambios en el frontend.
+
+### Evidencia de prueba real contra n8n (verificación previa)
+
+- **PBI-02** (ejecución `2382`): payload con folio piloto real → respuesta 200 con los
+  campos exactos que espera `ConsultarSolicitudResponse`.
+- **PBI-03** (ejecución `2383`): payload `{ estados: [], area: "" }` → `solicitudes[]`
+  con exactamente los campos de `SolicitudBandeja`.
+- **PBI-05 → PBI-06** (ejecuciones `2384`/`2385`): se generó un token real de un solo
+  uso y se confirmó que `ConsultarAprobacionResponse` trae el microinforme correcto.
+
+Esto confirma que los tipos y el parseo del frontend son correctos contra las
+respuestas reales del backend ya publicado.

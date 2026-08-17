@@ -8,6 +8,8 @@ export interface ApiResult<T> {
   data: T | null
   networkError: boolean
   errorMessage?: string
+  /** true cuando la respuesta fue simulada localmente porque falta la variable VITE_PBI0X_URL. */
+  demo?: boolean
 }
 
 // ---------- PBI-01 Registrar Solicitud ----------
@@ -190,4 +192,201 @@ export interface RegistrarDecisionResponse {
   estadoSolicitud?: string
   errors?: string[]
   error?: string
+}
+
+// =============================================================================
+// MODELO DE DATOS — Gestión IC (portal de proyectos corporativos)
+// -----------------------------------------------------------------------------
+// Todo lo que sigue es el modelo de datos del frontend para el módulo nuevo de
+// "Gestión de proyectos" (roles Usuario / Líder / Administrador, portal del
+// solicitante, seguimiento, evidencias, aprobaciones y auditoría).
+//
+// Es un módulo INDEPENDIENTE del flujo PBI-01..07 de arriba: ese flujo sigue
+// hablando con los webhooks reales de n8n/Airtable sin ningún cambio. Este
+// módulo nuevo, en su primera versión, opera en MODO DEMO sobre
+// src/lib/demoStore.ts (localStorage) — ver ese archivo y el README para el
+// contrato propuesto de payloads si se decide conectarlo a n8n más adelante.
+// =============================================================================
+
+export type Role = 'usuario' | 'lider' | 'admin'
+
+export type Priority = 'Baja' | 'Media' | 'Alta' | 'Crítica'
+
+/**
+ * Catálogo centralizado de estados del ciclo de vida completo de una
+ * iniciativa: desde que se solicita hasta que se cierra. Ver src/lib/catalog.ts
+ * para el orden, colores y agrupación de cada estado.
+ */
+export type ProjectStatus =
+  | 'Solicitud recibida'
+  | 'En revisión'
+  | 'Requiere ajustes'
+  | 'Aprobada'
+  | 'Rechazada'
+  | 'Pendiente de asignación'
+  | 'Asignada'
+  | 'En planeación'
+  | 'En ejecución'
+  | 'Bloqueada'
+  | 'En validación'
+  | 'Finalizada'
+  | 'Cancelada'
+
+export interface Area {
+  id: string
+  nombre: string
+  descripcion?: string
+  liderId?: string
+  activa: boolean
+  creadaEn: string
+}
+
+export interface User {
+  id: string
+  nombre: string
+  correo: string
+  rol: Role
+  areaId: string
+  puesto?: string
+  activo: boolean
+  avatarIniciales: string
+  creadoEn: string
+}
+
+/**
+ * Metadato ligero de un archivo cargado en modo demo. No se sube a ningún
+ * storage real: solo se conserva nombre/tipo/tamaño y, si el navegador lo
+ * permite, una vista previa local (data URL) que vive únicamente en memoria /
+ * localStorage del navegador de quien hace la demo.
+ */
+export interface EvidenceRef {
+  nombreArchivo: string
+  tipo: string
+  tamanoBytes: number
+  previewUrl?: string
+}
+
+/** Solicitud de proyecto capturada por el portal del solicitante. */
+export interface ProjectRequest {
+  id: string
+  folio: string
+  nombreSolicitante: string
+  correoSolicitante: string
+  areaSolicitante: string
+  nombreProyecto: string
+  descripcion: string
+  problemaONecesidad: string
+  objetivo: string
+  beneficioEsperado: string
+  fechaInicioDeseada: string
+  fechaTerminoEstimada: string
+  prioridad: Priority
+  areaResponsableSugerida: string
+  archivosIniciales: EvidenceRef[]
+  comentariosAdicionales?: string
+  estado: ProjectStatus
+  motivoRechazoOAjuste?: string
+  creadoEn: string
+  actualizadoEn: string
+  proyectoId?: string
+}
+
+/** Proyecto activo (existe desde que una solicitud se asigna a un responsable). */
+export interface Project {
+  id: string
+  folio: string
+  requestId?: string
+  nombre: string
+  descripcion: string
+  areaId: string
+  liderId: string
+  responsableId: string
+  equipoIds: string[]
+  prioridad: Priority
+  estado: ProjectStatus
+  fechaInicio: string
+  fechaFinEstimada: string
+  fechaFinReal?: string
+  avance: number
+  ultimaActualizacion: string
+  bloqueado: boolean
+  motivoBloqueo?: string
+  creadoEn: string
+}
+
+export interface ProjectAssignment {
+  id: string
+  projectId: string
+  userId: string
+  rolEnProyecto: 'Responsable' | 'Colaborador'
+  asignadoPorId: string
+  asignadoEn: string
+  activo: boolean
+}
+
+export interface ProgressUpdate {
+  id: string
+  projectId: string
+  autorId: string
+  fecha: string
+  avance: number
+  resumen: string
+  bloqueado: boolean
+  motivoBloqueo?: string
+  evidenciaIds: string[]
+}
+
+export interface Evidence {
+  id: string
+  projectId: string
+  progressUpdateId?: string
+  nombreArchivo: string
+  tipo: string
+  tamanoBytes: number
+  previewUrl?: string
+  subidoPorId: string
+  subidoEn: string
+  validacion: 'Pendiente' | 'Validada' | 'Rechazada'
+  validadoPorId?: string
+  comentarioValidacion?: string
+}
+
+export interface Comment {
+  id: string
+  projectId: string
+  autorId: string
+  texto: string
+  creadoEn: string
+}
+
+export interface StatusHistory {
+  id: string
+  entidad: 'ProjectRequest' | 'Project'
+  entidadId: string
+  fecha: string
+  usuarioId: string
+  estadoAnterior: string
+  estadoNuevo: string
+  comentario?: string
+}
+
+export interface Notification {
+  id: string
+  userId: string
+  titulo: string
+  mensaje: string
+  tipo: 'info' | 'alerta' | 'exito' | 'error'
+  leida: boolean
+  creadaEn: string
+  enlace?: string
+}
+
+export interface AuditEntry {
+  id: string
+  fecha: string
+  usuarioId: string
+  accion: string
+  entidad: string
+  entidadId: string
+  detalle?: string
 }
