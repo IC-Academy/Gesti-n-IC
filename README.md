@@ -4,8 +4,8 @@ Primera evolución del portal hacia la gestión transversal de proyectos corpora
 con duración estimada mayor a 30 días. Conserva los contratos PBI-01 a PBI-07 con
 Airtable y n8n e incorpora acceso por roles, portafolio, evidencias, equipo y administración.
 
-**Repositorio definitivo:** https://github.com/IC-Academy/Jirajorge
-**URL pública (GitHub Pages):** https://ic-academy.github.io/Jirajorge/
+**Repositorio definitivo:** https://github.com/IC-Academy/Gesti-n-IC
+**URL pública (GitHub Pages):** https://ic-academy.github.io/Gesti-n-IC/
 
 Frontend de Gestión IC. No tiene backend propio: cada
 pantalla llama directamente, por `fetch()` desde el navegador, a los webhooks reales de
@@ -92,13 +92,13 @@ npm run preview
 Sirve `dist/` localmente en `http://localhost:4173` para verificar el build de
 producción antes de publicarlo.
 
-## Publicar en GitHub Pages (repositorio IC-Academy/Jirajorge)
+## Publicar en GitHub Pages (repositorio IC-Academy/Gesti-n-IC)
 
 Este proyecto se publica sobre el repositorio ya existente
-**https://github.com/IC-Academy/Jirajorge**, en la URL
-**https://ic-academy.github.io/Jirajorge/**. No se crea un repositorio nuevo.
+**https://github.com/IC-Academy/Gesti-n-IC**, en la URL
+**https://ic-academy.github.io/Gesti-n-IC/**.
 
-`vite.config.ts` ya trae `base: "/Jirajorge/"` como valor por defecto (respetando
+`vite.config.ts` ya trae `base: "/Gesti-n-IC/"` como valor por defecto (respetando
 mayúsculas/minúsculas exactas, ya que GitHub Pages distingue la ruta), así que no hace
 falta pasar `VITE_BASE_PATH` a mano salvo que se quiera servir desde otra ruta.
 
@@ -145,12 +145,12 @@ pisen entre sí.
 La app usa `HashRouter` (rutas con `#`, por ejemplo `.../#/bandeja`) precisamente para
 funcionar de forma confiable en GitHub Pages sin necesitar configuración de
 reescritura de rutas en el servidor ni el truco del `404.html`. Bajo
-`https://ic-academy.github.io/Jirajorge/`, las rutas quedan como:
+`https://ic-academy.github.io/Gesti-n-IC/`, las rutas quedan como:
 
-- `https://ic-academy.github.io/Jirajorge/#/bandeja`
-- `https://ic-academy.github.io/Jirajorge/#/registrar` (registrar solicitud)
-- `https://ic-academy.github.io/Jirajorge/#/consultar` (consultar solicitud)
-- `https://ic-academy.github.io/Jirajorge/#/autorizaciones` (Centro de autorizaciones;
+- `https://ic-academy.github.io/Gesti-n-IC/#/bandeja`
+- `https://ic-academy.github.io/Gesti-n-IC/#/registrar` (registrar solicitud)
+- `https://ic-academy.github.io/Gesti-n-IC/#/consultar` (consultar solicitud)
+- `https://ic-academy.github.io/Gesti-n-IC/#/autorizaciones` (Centro de autorizaciones;
   también acepta `?token=TOKEN` para autocompletar el token desde el correo)
 
 Los enlaces profundos y el refresco de página (F5) funcionan correctamente con esta
@@ -175,7 +175,7 @@ Actions → Variables) para que `npm run build` no falle con el error de `Config
 Los valores exactos están en `.env.example`. `VITE_DEFAULT_API_KEY` es opcional y, si
 se usa, debe configurarse como **Secret** (no como Variable) porque sí es sensible.
 `VITE_BASE_PATH` no es necesario definirlo en CI: `vite.config.ts` ya trae
-`"/Jirajorge/"` como valor por defecto.
+`"/Gesti-n-IC/"` como valor por defecto.
 
 Si falta cualquiera de las 7 variables anteriores, la app no arranca en silencio con
 una URL equivocada: `src/lib/config.ts` ya no tiene URLs de producción
@@ -186,14 +186,14 @@ exactamente qué variable falta.
 
 Los 7 webhooks de n8n (PBI-01 a PBI-07) están configurados con
 `Options → Allowed Origins (CORS) = https://ic-academy.github.io` (origen exacto, sin
-`/Jirajorge/`, sin rutas, sin `#` ni parámetros — así es como los navegadores envían el
+`/Gesti-n-IC/`, sin rutas, sin `#` ni parámetros — así es como los navegadores envían el
 encabezado `Origin`). Esto ya está aplicado y publicado en los 7 workflows.
 
 Notas importantes sobre este valor:
 
-- El origen **no incluye** la ruta del repositorio (`/Jirajorge/`): CORS solo compara
+- El origen **no incluye** la ruta del repositorio (`/Gesti-n-IC/`): CORS solo compara
   esquema + host + puerto, nunca la ruta. `https://ic-academy.github.io` es correcto
-  para cualquier ruta bajo ese dominio, incluyendo `/Jirajorge/`.
+  para cualquier ruta bajo ese dominio, incluyendo `/Gesti-n-IC/`.
 - Si en algún momento se necesita seguir probando localmente
   (`http://localhost:5173`), hay que agregar ese origen también, separado por coma,
   en el nodo Webhook de cada workflow (`Options → Allowed Origins`), por ejemplo:
@@ -259,7 +259,7 @@ El correo que genera PBI-05 (nodo "Generar Token y Microinforme") ya construye e
 enlace (`approvalUrl = PORTAL_BASE_URL + '/#/autorizaciones?token=' + token`) y lo usa
 como botón principal ("Revisar y decidir") en el cuerpo del correo, con el enlace de
 texto plano y el token en crudo como respaldo. **`PORTAL_BASE_URL` ya tiene el valor
-definitivo**: `'https://ic-academy.github.io/Jirajorge'` (sin slash final; el propio
+definitivo**: `'https://ic-academy.github.io/Gesti-n-IC'` (sin slash final; el propio
 código del nodo agrega `/#/autorizaciones?token=...`). Ya no queda ningún placeholder
 tipo `https://REEMPLAZAR-CON-TU-DOMINIO-GITHUB-PAGES` en el workflow publicado.
 
@@ -295,7 +295,7 @@ El Centro de Autorizaciones ahora distingue tres estados al consultar un token
 ## Evidencia de build exitoso
 
 ```
-> portal-bi-frontend@0.1.0 build
+> gestion-ic@1.0.0-demo build
 > tsc -b && vite build
 
 vite v8.2.0 building client environment for production...
