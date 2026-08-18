@@ -9,7 +9,7 @@ import { Button } from '@/components/Button'
 import { Alert } from '@/components/gestion/Alert'
 import { EvidenceUploader } from '@/components/gestion/EvidenceUploader'
 import { ModeTag } from '@/components/gestion/ModeTag'
-import { crearSolicitud } from '@/lib/demoStore'
+import { actualizarSincronizacionSolicitud, crearSolicitud } from '@/lib/demoStore'
 import { notificarSolicitudAN8n } from '@/lib/projectsApi'
 import { DURACION_MINIMA_DIAS, PRIORITIES, duracionValida } from '@/lib/catalog'
 import type { EvidenceRef } from '@/lib/types'
@@ -19,6 +19,11 @@ const schema = z
     nombreSolicitante: z.string().min(1, 'Obligatorio'),
     correoSolicitante: z.string().email('Correo inválido'),
     areaSolicitante: z.string().min(1, 'Obligatorio'),
+    inmueble: z.string().min(1, 'Selecciona o captura el inmueble.'),
+    ubicacionEspecifica: z.string().min(3, 'Indica el espacio exacto afectado.'),
+    tipoMantenimiento: z.enum(['Preventivo', 'Correctivo', 'Adecuación', 'Emergencia']),
+    especialidad: z.string().min(1, 'Selecciona la especialidad.'),
+    impactoOperativo: z.string().min(5, 'Describe el impacto en la operación.'),
     nombreProyecto: z.string().min(1, 'Obligatorio'),
     descripcion: z.string().min(10, 'Describe brevemente el proyecto (mínimo 10 caracteres).'),
     problemaONecesidad: z.string().min(10, 'Obligatorio'),
@@ -41,11 +46,14 @@ const schema = z
 
 type FormValues = z.infer<typeof schema>
 
-const AREAS_SUGERIDAS = ['Inteligencia de Negocios', 'Operaciones', 'Nóminas', 'Dirección de Tecnología', 'Otra']
+const AREAS_SUGERIDAS = ['Mantenimiento General', 'Climatización y Equipos', 'Obra Civil y Adecuaciones', 'Administración de Inmuebles']
+const INMUEBLES = ['Corporativo CDMX', 'CEDIS Norte', 'CEDIS Poniente', 'Base Toluca', 'Base Sur', 'Base Oriente', 'Sede Centro', 'Otro']
+const ESPECIALIDADES = ['Electricidad', 'Plomería', 'Climatización / HVAC', 'Obra civil', 'Impermeabilización', 'Pintura y acabados', 'Mobiliario', 'Seguridad física', 'Otra']
 
 export function NuevaSolicitud() {
   const [archivos, setArchivos] = useState<EvidenceRef[]>([])
   const [folio, setFolio] = useState<string | null>(null)
+  const [syncResult, setSyncResult] = useState<{ status: 'local' | 'synced' | 'error'; message: string } | null>(null)
   const {
     register,
     handleSubmit,
@@ -55,7 +63,10 @@ export function NuevaSolicitud() {
 
   async function onSubmit(values: FormValues) {
     const req = crearSolicitud({ ...values, archivosIniciales: archivos })
-    void notificarSolicitudAN8n(req)
+    actualizarSincronizacionSolicitud(req.id, 'pending', 'Intentando sincronizar con n8n.')
+    const result = await notificarSolicitudAN8n(req)
+    actualizarSincronizacionSolicitud(req.id, result.status, result.message)
+    setSyncResult(result)
     setFolio(req.folio)
     reset()
     setArchivos([])
@@ -89,7 +100,10 @@ export function NuevaSolicitud() {
                 <span className="font-medium">Estado inicial:</span> Solicitud recibida
               </p>
             </div>
-            <Button onClick={() => setFolio(null)}>Registrar otra solicitud</Button>
+            {syncResult?.status === 'synced' ? <Alert tone="success">{syncResult.message}</Alert> : null}
+            {syncResult?.status === 'local' ? <Alert tone="info">{syncResult.message}</Alert> : null}
+            {syncResult?.status === 'error' ? <Alert tone="warning">{syncResult.message} Conserva el folio para reintentar después.</Alert> : null}
+            <Button onClick={() => { setFolio(null); setSyncResult(null) }}>Registrar otra solicitud</Button>
           </CardBody>
         </Card>
       </div>
@@ -100,21 +114,21 @@ export function NuevaSolicitud() {
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <p className="gestion-kicker">PORTAL DEL SOLICITANTE</p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-900">Nueva solicitud de proyecto</h1>
-          <p className="text-sm text-slate-500">Registra una iniciativa corporativa con duración mayor a 30 días.</p>
+          <p className="gestion-kicker">PORTAL DE MANTENIMIENTO</p>
+          <h1 className="mt-2 text-2xl font-semibold text-slate-900">Reportar necesidad de mantenimiento</h1>
+          <p className="text-sm text-slate-500">Registra una intervención mayor para un inmueble o instalación.</p>
         </div>
         <ModeTag mode="demo" />
       </div>
 
       <Alert tone="info" title="Alcance de Gestión IC">
-        Este portal administra proyectos con duración estimada mayor a {DURACION_MINIMA_DIAS} días. Los requerimientos
-        menores se canalizan por el proceso operativo correspondiente.
+        Esta primera fase administra intervenciones con duración estimada mayor a {DURACION_MINIMA_DIAS} días. Los trabajos
+        menores continuarán por el proceso operativo vigente.
       </Alert>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-6">
         <Card>
-          <CardHeader title="Datos del solicitante" />
+          <CardHeader title="Solicitante e inmueble" />
           <CardBody className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Nombre del solicitante" required error={errors.nombreSolicitante?.message}>
               <input className={inputClass(!!errors.nombreSolicitante)} {...register('nombreSolicitante')} />
@@ -124,6 +138,27 @@ export function NuevaSolicitud() {
             </Field>
             <Field label="Área solicitante" required error={errors.areaSolicitante?.message}>
               <input className={inputClass(!!errors.areaSolicitante)} {...register('areaSolicitante')} />
+            </Field>
+            <Field label="Inmueble o sede" required error={errors.inmueble?.message}>
+              <select className={inputClass(!!errors.inmueble)} defaultValue="" {...register('inmueble')}>
+                <option value="" disabled>Selecciona una opción</option>
+                {INMUEBLES.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </Field>
+            <Field label="Ubicación exacta" required hint="Piso, oficina, almacén, sanitario, cuarto técnico, etc." error={errors.ubicacionEspecifica?.message}>
+              <input className={inputClass(!!errors.ubicacionEspecifica)} {...register('ubicacionEspecifica')} />
+            </Field>
+            <Field label="Tipo de mantenimiento" required error={errors.tipoMantenimiento?.message}>
+              <select className={inputClass(!!errors.tipoMantenimiento)} defaultValue="" {...register('tipoMantenimiento')}>
+                <option value="" disabled>Selecciona una opción</option>
+                {['Preventivo', 'Correctivo', 'Adecuación', 'Emergencia'].map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </Field>
+            <Field label="Especialidad" required error={errors.especialidad?.message}>
+              <select className={inputClass(!!errors.especialidad)} defaultValue="" {...register('especialidad')}>
+                <option value="" disabled>Selecciona una opción</option>
+                {ESPECIALIDADES.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
             </Field>
             <Field label="Área responsable sugerida" required hint="¿Qué área crees que debería ejecutar el proyecto?" error={errors.areaResponsableSugerida?.message}>
               <select className={inputClass(!!errors.areaResponsableSugerida)} defaultValue="" {...register('areaResponsableSugerida')}>
@@ -137,9 +172,9 @@ export function NuevaSolicitud() {
         </Card>
 
         <Card>
-          <CardHeader title="Descripción del proyecto" />
+          <CardHeader title="Descripción de la necesidad" />
           <CardBody className="grid grid-cols-1 gap-4">
-            <Field label="Nombre del proyecto" required error={errors.nombreProyecto?.message}>
+            <Field label="Título de la intervención" required error={errors.nombreProyecto?.message}>
               <input className={inputClass(!!errors.nombreProyecto)} {...register('nombreProyecto')} />
             </Field>
             <Field label="Descripción" required error={errors.descripcion?.message}>
@@ -147,6 +182,9 @@ export function NuevaSolicitud() {
             </Field>
             <Field label="Problema o necesidad" required error={errors.problemaONecesidad?.message}>
               <textarea rows={3} className={inputClass(!!errors.problemaONecesidad)} {...register('problemaONecesidad')} />
+            </Field>
+            <Field label="Impacto en la operación" required error={errors.impactoOperativo?.message}>
+              <textarea rows={2} className={inputClass(!!errors.impactoOperativo)} {...register('impactoOperativo')} />
             </Field>
             <Field label="Objetivo" required error={errors.objetivo?.message}>
               <textarea rows={3} className={inputClass(!!errors.objetivo)} {...register('objetivo')} />
@@ -178,7 +216,7 @@ export function NuevaSolicitud() {
         </Card>
 
         <Card>
-          <CardHeader title="Evidencias y comentarios" subtitle="Opcional" />
+          <CardHeader title="Evidencias y comentarios" subtitle="Opcional · En esta demo los archivos no se cargan a un servidor" />
           <CardBody className="space-y-4">
             <Field label="Archivos o evidencias iniciales">
               <EvidenceUploader value={archivos} onChange={setArchivos} />

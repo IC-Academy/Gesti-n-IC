@@ -39,27 +39,8 @@ jobs:
         run: npm ci
 
       - name: Compilar (npm run build)
-        # Las URLs de los 7 webhooks de n8n se inyectan como variables de
-        # entorno en tiempo de build (nunca como archivo .env versionado).
-        # Deben configurarse en Settings -> Secrets and variables -> Actions
-        # -> Variables (no son secretas per se: estan protegidas por CORS y
-        # x-api-key del lado de n8n, pero se mantienen fuera del repo para
-        # poder rotarlas sin tocar codigo). VITE_DEFAULT_API_KEY, si se usa,
-        # deberia configurarse como Secret en vez de Variable.
-        # Ruta exacta del repositorio de GitHub Pages.
+        # Fase 1: demo sin backend. Solo requiere la ruta exacta de Pages.
         env:
-          VITE_PBI01_URL: ${{ vars.VITE_PBI01_URL }}
-          VITE_PBI02_URL: ${{ vars.VITE_PBI02_URL }}
-          VITE_PBI03_URL: ${{ vars.VITE_PBI03_URL }}
-          VITE_PBI04_URL: ${{ vars.VITE_PBI04_URL }}
-          VITE_PBI05_URL: ${{ vars.VITE_PBI05_URL }}
-          VITE_PBI06_URL: ${{ vars.VITE_PBI06_URL }}
-          VITE_PBI07_URL: ${{ vars.VITE_PBI07_URL }}
-          VITE_DEFAULT_API_KEY: ${{ secrets.VITE_DEFAULT_API_KEY }}
-          # Opcional: webhook futuro del módulo de Gestión de Proyectos (portal
-          # del solicitante nuevo). Mientras no exista, dejar sin configurar:
-          # el módulo sigue funcionando en modo demostración (ver README.md).
-          VITE_PROJECTS_REQUEST_URL: ${{ vars.VITE_PROJECTS_REQUEST_URL }}
           VITE_BASE_PATH: /Gesti-n-IC/
         run: npm run build
 

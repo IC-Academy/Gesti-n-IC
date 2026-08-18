@@ -52,7 +52,7 @@ export function CentroAutorizaciones() {
       setLoadingConsulta(false)
 
       if (res.networkError) {
-        setNetworkErr(networkErrorMessage('jmejiaromero.app.n8n.cloud'))
+        setNetworkErr(networkErrorMessage('servidor n8n configurado'))
         return
       }
       if (!res.ok || !res.data?.ok) {
@@ -92,7 +92,7 @@ export function CentroAutorizaciones() {
     setDecisionLoading(false)
 
     if (res.networkError) {
-      setDecisionError(networkErrorMessage('jmejiaromero.app.n8n.cloud'))
+      setDecisionError(networkErrorMessage('servidor n8n configurado'))
       return
     }
     if (res.status === 400 && res.data?.errors) {

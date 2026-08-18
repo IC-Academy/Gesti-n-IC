@@ -21,28 +21,27 @@ export function Acceso() {
       <section className="gestion-hero">
         <div className="flex items-center gap-3">
           <span className="gestion-logo">IC</span>
-          <b>Gestión IC</b>
+          <b>Gestión IC Mantenimiento</b>
         </div>
         <div>
           <p className="gestion-kicker !text-blue-200">GESTIÓN CORPORATIVA · FY2026</p>
           <h1>
-            Los proyectos importantes,
+            Tus inmuebles operando,
             <br />
-            en un solo lugar.
+            sin perder el control.
           </h1>
           <p>
-            Solicita, prioriza y da seguimiento a iniciativas de más de 30 días con evidencia, responsables y
-            trazabilidad completa.
+            Centraliza solicitudes de mantenimiento, intervenciones mayores, responsables, fechas y evidencia de inmuebles e instalaciones.
           </p>
         </div>
         <small>● Entorno de demostración · Datos simulados</small>
       </section>
       <section className="grid place-items-center overflow-y-auto bg-white p-10">
         <div className="w-full max-w-md">
-          <p className="gestion-kicker">PORTAL CORPORATIVO DE PROYECTOS</p>
+          <p className="gestion-kicker">PORTAL DE MANTENIMIENTO DE INMUEBLES</p>
           <h2 className="mt-3 text-4xl font-semibold tracking-tight">Bienvenido</h2>
           <p className="mt-2 text-sm text-slate-500">
-            Este es un entorno de demostración: elige una persona para explorar Gestión IC con su rol y área.
+            Este es un entorno de demostración: elige una persona para explorar la operación como técnico, coordinador o administrador.
           </p>
           <div className="mt-6 max-h-[46vh] space-y-2 overflow-y-auto pr-1">
             {personas.map((p) => {
@@ -75,7 +74,7 @@ export function Acceso() {
               <KeyRound className="h-3.5 w-3.5" /> ¿Problemas para entrar? Recuperar acceso
             </button>
             <Link to="/publico/nueva-solicitud" className="flex items-center gap-2 text-xs font-semibold text-blue-700 hover:underline">
-              <Send className="h-3.5 w-3.5" /> Registrar una solicitud sin iniciar sesión
+              <Send className="h-3.5 w-3.5" /> Reportar una necesidad de mantenimiento
             </Link>
           </div>
         </div>

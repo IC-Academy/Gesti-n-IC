@@ -45,7 +45,7 @@ export interface DemoState {
   audit: AuditEntry[]
 }
 
-const STORAGE_KEY = 'gestion_ic_demo_v1'
+const STORAGE_KEY = 'gestion_ic_mantenimiento_demo_v1'
 
 // ---------------------------------------------------------------------------
 // Utilidades de fecha / id
@@ -112,21 +112,21 @@ function seed(): DemoState {
   idCounter = 0
 
   const areas: Area[] = [
-    { id: 'area-bi', nombre: 'Inteligencia de Negocios', descripcion: 'Datos, reportes y automatizaciones.', liderId: 'user-lider-bi', activa: true, creadaEn: isoOffset(-400) },
-    { id: 'area-ops', nombre: 'Operaciones', descripcion: 'Procesos operativos y logística.', liderId: 'user-lider-ops', activa: true, creadaEn: isoOffset(-400) },
-    { id: 'area-nom', nombre: 'Nóminas', descripcion: 'Pago y administración de personal.', liderId: undefined, activa: true, creadaEn: isoOffset(-400) },
-    { id: 'area-dir', nombre: 'Dirección de Tecnología', descripcion: 'Gobierno de proyectos y tecnología.', liderId: undefined, activa: true, creadaEn: isoOffset(-400) },
+    { id: 'area-bi', nombre: 'Mantenimiento General', descripcion: 'Electricidad, plomería, pintura y reparaciones generales.', liderId: 'user-lider-bi', activa: true, creadaEn: isoOffset(-400) },
+    { id: 'area-ops', nombre: 'Climatización y Equipos', descripcion: 'Aire acondicionado, ventilación y equipos fijos.', liderId: 'user-lider-ops', activa: true, creadaEn: isoOffset(-400) },
+    { id: 'area-nom', nombre: 'Obra Civil y Adecuaciones', descripcion: 'Remodelaciones, impermeabilización y adecuaciones.', liderId: undefined, activa: true, creadaEn: isoOffset(-400) },
+    { id: 'area-dir', nombre: 'Administración de Inmuebles', descripcion: 'Gobierno, presupuesto, proveedores y portafolio de inmuebles.', liderId: undefined, activa: true, creadaEn: isoOffset(-400) },
   ]
 
   const users: User[] = [
-    { id: 'user-admin', nombre: 'Andrea Bautista', correo: 'andrea.bautista@iccorp-demo.mx', rol: 'admin', areaId: 'area-dir', puesto: 'Directora de Gobierno de Proyectos', activo: true, avatarIniciales: 'AB', creadoEn: isoOffset(-400) },
-    { id: 'user-lider-bi', nombre: 'Jorge Mejía', correo: 'jorge.mejia@iccorp-demo.mx', rol: 'lider', areaId: 'area-bi', puesto: 'Líder de Inteligencia de Negocios', activo: true, avatarIniciales: 'JM', creadoEn: isoOffset(-380) },
-    { id: 'user-lider-ops', nombre: 'Patricia Solís', correo: 'patricia.solis@iccorp-demo.mx', rol: 'lider', areaId: 'area-ops', puesto: 'Líder de Operaciones', activo: true, avatarIniciales: 'PS', creadoEn: isoOffset(-380) },
-    { id: 'user-usr-1', nombre: 'Daniela Juárez', correo: 'daniela.juarez@iccorp-demo.mx', rol: 'usuario', areaId: 'area-bi', puesto: 'Analista de Datos', activo: true, avatarIniciales: 'DJ', creadoEn: isoOffset(-360) },
-    { id: 'user-usr-2', nombre: 'Ricardo Nava', correo: 'ricardo.nava@iccorp-demo.mx', rol: 'usuario', areaId: 'area-bi', puesto: 'Desarrollador BI', activo: true, avatarIniciales: 'RN', creadoEn: isoOffset(-340) },
-    { id: 'user-usr-3', nombre: 'Manuel Ortega', correo: 'manuel.ortega@iccorp-demo.mx', rol: 'usuario', areaId: 'area-ops', puesto: 'Coordinador de Operaciones', activo: true, avatarIniciales: 'MO', creadoEn: isoOffset(-340) },
-    { id: 'user-usr-4', nombre: 'Sofía Camacho', correo: 'sofia.camacho@iccorp-demo.mx', rol: 'usuario', areaId: 'area-ops', puesto: 'Analista de Procesos', activo: true, avatarIniciales: 'SC', creadoEn: isoOffset(-300) },
-    { id: 'user-usr-5', nombre: 'Frances Aviña', correo: 'frances.avina@iccorp-demo.mx', rol: 'usuario', areaId: 'area-nom', puesto: 'Especialista de Nómina', activo: true, avatarIniciales: 'FA', creadoEn: isoOffset(-300) },
+    { id: 'user-admin', nombre: 'Andrea Bautista', correo: 'andrea.bautista@iccorp-demo.mx', rol: 'admin', areaId: 'area-dir', puesto: 'Administradora de Inmuebles', activo: true, avatarIniciales: 'AB', creadoEn: isoOffset(-400) },
+    { id: 'user-lider-bi', nombre: 'Carlos Mendoza', correo: 'carlos.mendoza@iccorp-demo.mx', rol: 'lider', areaId: 'area-bi', puesto: 'Coordinador de Mantenimiento General', activo: true, avatarIniciales: 'CM', creadoEn: isoOffset(-380) },
+    { id: 'user-lider-ops', nombre: 'Patricia Solís', correo: 'patricia.solis@iccorp-demo.mx', rol: 'lider', areaId: 'area-ops', puesto: 'Supervisora de Climatización', activo: true, avatarIniciales: 'PS', creadoEn: isoOffset(-380) },
+    { id: 'user-usr-1', nombre: 'Daniela Juárez', correo: 'daniela.juarez@iccorp-demo.mx', rol: 'usuario', areaId: 'area-bi', puesto: 'Técnica electricista', activo: true, avatarIniciales: 'DJ', creadoEn: isoOffset(-360) },
+    { id: 'user-usr-2', nombre: 'Ricardo Nava', correo: 'ricardo.nava@iccorp-demo.mx', rol: 'usuario', areaId: 'area-bi', puesto: 'Técnico de mantenimiento general', activo: true, avatarIniciales: 'RN', creadoEn: isoOffset(-340) },
+    { id: 'user-usr-3', nombre: 'Manuel Ortega', correo: 'manuel.ortega@iccorp-demo.mx', rol: 'usuario', areaId: 'area-ops', puesto: 'Técnico HVAC', activo: true, avatarIniciales: 'MO', creadoEn: isoOffset(-340) },
+    { id: 'user-usr-4', nombre: 'Sofía Camacho', correo: 'sofia.camacho@iccorp-demo.mx', rol: 'usuario', areaId: 'area-ops', puesto: 'Técnica electromecánica', activo: true, avatarIniciales: 'SC', creadoEn: isoOffset(-300) },
+    { id: 'user-usr-5', nombre: 'Fernando Ruiz', correo: 'fernando.ruiz@iccorp-demo.mx', rol: 'usuario', areaId: 'area-nom', puesto: 'Supervisor de obra', activo: true, avatarIniciales: 'FR', creadoEn: isoOffset(-300) },
   ]
 
   const projects: Project[] = []
@@ -171,16 +171,16 @@ function seed(): DemoState {
   }
 
   const semillas: Semilla[] = [
-    { nombre: 'Rediseño del Portal de Solicitudes BI', descripcion: 'Modernizar la captura y evaluación de solicitudes de Inteligencia de Negocios.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-1', equipoIds: ['user-usr-2'], prioridad: 'Alta', estado: 'En ejecución', avance: 62, inicioHace: 55, finEnDias: 40, ultimaActualizacionHace: 2 },
-    { nombre: 'Automatización de Conciliación de Nómina Semanal', descripcion: 'Eliminar la conciliación manual entre el sistema de asistencia y la dispersión de nómina.', areaId: 'area-nom', liderId: 'user-lider-bi', responsableId: 'user-usr-5', equipoIds: [], prioridad: 'Alta', estado: 'En ejecución', avance: 48, inicioHace: 70, finEnDias: -6, ultimaActualizacionHace: 9 },
-    { nombre: 'Modelo de Pronóstico de Rotación de Personal', descripcion: 'Modelo predictivo para anticipar rotación de personal por área.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-2', equipoIds: ['user-usr-1'], prioridad: 'Media', estado: 'Bloqueada', avance: 35, inicioHace: 48, finEnDias: 35, ultimaActualizacionHace: 6, bloqueado: true, motivoBloqueo: 'Falta acceso a la base histórica de Recursos Humanos (permiso pendiente de TI).' },
-    { nombre: 'Optimización de Rutas de Distribución', descripcion: 'Reducir tiempos y costo de flete optimizando rutas de reparto.', areaId: 'area-ops', liderId: 'user-lider-ops', responsableId: 'user-usr-3', equipoIds: ['user-usr-4'], prioridad: 'Crítica', estado: 'En ejecución', avance: 81, inicioHace: 60, finEnDias: 6, ultimaActualizacionHace: 1 },
-    { nombre: 'Tablero de Indicadores de Manufactura', descripcion: 'Tablero ejecutivo de OEE, mermas y cumplimiento de producción.', areaId: 'area-ops', liderId: 'user-lider-ops', responsableId: 'user-usr-4', equipoIds: [], prioridad: 'Media', estado: 'En validación', avance: 95, inicioHace: 66, finEnDias: 10, ultimaActualizacionHace: 1 },
-    { nombre: 'Implementación de Firma Electrónica para Contratos', descripcion: 'Sustituir la firma en papel por firma electrónica en contratos y convenios.', areaId: 'area-dir', liderId: 'user-lider-bi', responsableId: 'user-admin', equipoIds: [], prioridad: 'Media', estado: 'En planeación', avance: 10, inicioHace: 8, finEnDias: 82, ultimaActualizacionHace: 3 },
-    { nombre: 'Migración de Reportes Financieros a Power BI', descripcion: 'Migrar los reportes financieros mensuales de hojas de cálculo a Power BI.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-1', equipoIds: ['user-usr-2'], prioridad: 'Alta', estado: 'Finalizada', avance: 100, inicioHace: 130, finEnDias: -20, ultimaActualizacionHace: 20, finReal: true },
-    { nombre: 'Programa de Bienestar y Capacitación Continua', descripcion: 'Plataforma para gestionar capacitaciones y bienestar del personal.', areaId: 'area-nom', liderId: 'user-lider-bi', responsableId: 'user-usr-5', equipoIds: [], prioridad: 'Baja', estado: 'Cancelada', avance: 20, inicioHace: 90, finEnDias: -30, ultimaActualizacionHace: 45 },
-    { nombre: 'Sistema de Gestión de Turnos y Asistencia', descripcion: 'Sistema para programar turnos y controlar asistencia del personal de planta.', areaId: 'area-ops', liderId: 'user-lider-ops', responsableId: 'user-usr-3', equipoIds: ['user-usr-4'], prioridad: 'Media', estado: 'Asignada', avance: 0, inicioHace: 12, finEnDias: 78, ultimaActualizacionHace: 12 },
-    { nombre: 'Panel de Analítica de Ventas en Tiempo Real', descripcion: 'Panel con indicadores de ventas actualizados en tiempo real por sucursal.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-2', equipoIds: [], prioridad: 'Alta', estado: 'En ejecución', avance: 55, inicioHace: 45, finEnDias: 33, ultimaActualizacionHace: 13 },
+    { nombre: 'Renovación eléctrica · Corporativo CDMX', descripcion: 'Sustitución de tableros, circuitos y luminarias en tres niveles del corporativo.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-1', equipoIds: ['user-usr-2'], prioridad: 'Alta', estado: 'En ejecución', avance: 62, inicioHace: 55, finEnDias: 40, ultimaActualizacionHace: 2 },
+    { nombre: 'Impermeabilización integral · CEDIS Norte', descripcion: 'Corrección de filtraciones y renovación de impermeabilizante en cubiertas.', areaId: 'area-nom', liderId: 'user-lider-bi', responsableId: 'user-usr-5', equipoIds: [], prioridad: 'Alta', estado: 'En ejecución', avance: 48, inicioHace: 70, finEnDias: -6, ultimaActualizacionHace: 9 },
+    { nombre: 'Rehabilitación de sanitarios · Base Toluca', descripcion: 'Renovación de tuberías, muebles y acabados de sanitarios operativos.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-2', equipoIds: ['user-usr-1'], prioridad: 'Media', estado: 'Bloqueada', avance: 35, inicioHace: 48, finEnDias: 35, ultimaActualizacionHace: 6, bloqueado: true, motivoBloqueo: 'Proveedor pendiente de entregar válvulas y muebles sanitarios.' },
+    { nombre: 'Sustitución de chillers · Corporativo', descripcion: 'Reemplazo escalonado de equipos de climatización sin detener la operación.', areaId: 'area-ops', liderId: 'user-lider-ops', responsableId: 'user-usr-3', equipoIds: ['user-usr-4'], prioridad: 'Crítica', estado: 'En ejecución', avance: 81, inicioHace: 60, finEnDias: 6, ultimaActualizacionHace: 1 },
+    { nombre: 'Mantenimiento mayor a subestación · Base Sur', descripcion: 'Pruebas, limpieza, reapriete y sustitución de componentes críticos.', areaId: 'area-ops', liderId: 'user-lider-ops', responsableId: 'user-usr-4', equipoIds: [], prioridad: 'Media', estado: 'En validación', avance: 95, inicioHace: 66, finEnDias: 10, ultimaActualizacionHace: 1 },
+    { nombre: 'Adecuación de nueva oficina regional', descripcion: 'Obra civil, voz y datos, climatización, mobiliario e imagen del inmueble.', areaId: 'area-dir', liderId: 'user-lider-bi', responsableId: 'user-admin', equipoIds: [], prioridad: 'Media', estado: 'En planeación', avance: 10, inicioHace: 8, finEnDias: 82, ultimaActualizacionHace: 3 },
+    { nombre: 'Cambio de luminarias a LED · CEDIS Poniente', descripcion: 'Sustitución total de luminarias y adecuación de circuitos.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-1', equipoIds: ['user-usr-2'], prioridad: 'Alta', estado: 'Finalizada', avance: 100, inicioHace: 130, finEnDias: -20, ultimaActualizacionHace: 20, finReal: true },
+    { nombre: 'Remodelación de comedor · Base Oriente', descripcion: 'Adecuación de cocina, pisos, ventilación y acabados.', areaId: 'area-nom', liderId: 'user-lider-bi', responsableId: 'user-usr-5', equipoIds: [], prioridad: 'Baja', estado: 'Cancelada', avance: 20, inicioHace: 90, finEnDias: -30, ultimaActualizacionHace: 45 },
+    { nombre: 'Programa preventivo de equipos HVAC', descripcion: 'Servicio mayor y renovación de componentes en equipos de cinco sedes.', areaId: 'area-ops', liderId: 'user-lider-ops', responsableId: 'user-usr-3', equipoIds: ['user-usr-4'], prioridad: 'Media', estado: 'Asignada', avance: 0, inicioHace: 12, finEnDias: 78, ultimaActualizacionHace: 12 },
+    { nombre: 'Reparación de fachadas y sellos · Sede Centro', descripcion: 'Corrección de fisuras, sellos y desprendimientos exteriores.', areaId: 'area-bi', liderId: 'user-lider-bi', responsableId: 'user-usr-2', equipoIds: [], prioridad: 'Alta', estado: 'En ejecución', avance: 55, inicioHace: 45, finEnDias: 33, ultimaActualizacionHace: 13 },
   ]
 
   semillas.forEach((s, i) => {
@@ -201,6 +201,11 @@ function seed(): DemoState {
       nombreSolicitante: users.find((u) => u.id === s.responsableId)?.nombre ?? 'Solicitante',
       correoSolicitante: users.find((u) => u.id === s.responsableId)?.correo ?? 'solicitante@iccorp-demo.mx',
       areaSolicitante: areas.find((a) => a.id === s.areaId)?.nombre ?? '',
+      inmueble: ['Corporativo CDMX', 'CEDIS Norte', 'Base Toluca', 'Corporativo CDMX', 'Base Sur', 'Sede Centro', 'CEDIS Poniente', 'Base Oriente', 'Cinco sedes', 'Sede Centro'][i],
+      ubicacionEspecifica: ['Niveles 1 a 3', 'Cubierta principal', 'Sanitarios operativos', 'Cuarto de máquinas', 'Subestación eléctrica', 'Planta completa', 'Naves y andenes', 'Comedor', 'Cuartos técnicos', 'Fachada exterior'][i],
+      tipoMantenimiento: s.estado === 'Finalizada' ? 'Preventivo' : 'Correctivo',
+      especialidad: s.areaId === 'area-ops' ? 'Climatización / HVAC' : s.areaId === 'area-nom' ? 'Obra civil' : 'Mantenimiento general',
+      impactoOperativo: 'La intervención afecta continuidad, seguridad o condiciones adecuadas de operación del inmueble.',
       nombreProyecto: s.nombre,
       descripcion: s.descripcion,
       problemaONecesidad: `Actualmente el proceso relacionado con "${s.nombre}" se realiza de forma manual o dispersa, generando retrabajo y falta de visibilidad.`,
@@ -213,6 +218,7 @@ function seed(): DemoState {
       archivosIniciales: [],
       comentariosAdicionales: undefined,
       estado: s.estado,
+      syncStatus: 'local',
       creadoEn: fInicioSolicitud,
       actualizadoEn: fAsignacion,
       proyectoId: projectId,
@@ -328,11 +334,11 @@ function seed(): DemoState {
 
   // --- Solicitudes que aún no se convierten en proyecto ---------------------
   const solicitudesExtra: Array<Pick<ProjectRequest, 'nombreProyecto' | 'descripcion' | 'areaResponsableSugerida' | 'estado' | 'prioridad' | 'nombreSolicitante' | 'correoSolicitante' | 'areaSolicitante'> & { comentario?: string }> = [
-    { nombreProyecto: 'Chatbot interno de soporte de TI', descripcion: 'Asistente conversacional para resolver dudas frecuentes de sistemas y accesos.', areaResponsableSugerida: 'Dirección de Tecnología', areaSolicitante: 'Dirección de Tecnología', estado: 'Solicitud recibida', prioridad: 'Media', nombreSolicitante: 'Laura Higuera', correoSolicitante: 'laura.higuera@iccorp-demo.mx' },
-    { nombreProyecto: 'Dashboard de Rotación de Inventario', descripcion: 'Panel para dar seguimiento a la rotación y obsolescencia de inventario.', areaResponsableSugerida: 'Operaciones', areaSolicitante: 'Operaciones', estado: 'En revisión', prioridad: 'Alta', nombreSolicitante: 'Carlos Peña', correoSolicitante: 'carlos.pena@iccorp-demo.mx' },
-    { nombreProyecto: 'App móvil de checklist de calidad', descripcion: 'Aplicación móvil para checklists de calidad en planta.', areaResponsableSugerida: 'Operaciones', areaSolicitante: 'Operaciones', estado: 'Requiere ajustes', prioridad: 'Media', nombreSolicitante: 'Iván Torres', correoSolicitante: 'ivan.torres@iccorp-demo.mx', comentario: 'Falta precisar el alcance: ¿aplica a todas las plantas o solo a la planta piloto?' },
-    { nombreProyecto: 'Integración CRM-ERP', descripcion: 'Sincronizar clientes y pedidos entre el CRM comercial y el ERP.', areaResponsableSugerida: 'Inteligencia de Negocios', areaSolicitante: 'Inteligencia de Negocios', estado: 'Rechazada', prioridad: 'Alta', nombreSolicitante: 'Miguel Ángel Ruiz', correoSolicitante: 'miguel.ruiz@iccorp-demo.mx', comentario: 'Ya existe una iniciativa activa que cubre este alcance (Rediseño del Portal de Solicitudes BI).' },
-    { nombreProyecto: 'Portal de onboarding de nuevo ingreso', descripcion: 'Portal para automatizar el proceso de bienvenida de nuevos colaboradores.', areaResponsableSugerida: 'Nóminas', areaSolicitante: 'Nóminas', estado: 'Pendiente de asignación', prioridad: 'Media', nombreSolicitante: 'Frances Aviña', correoSolicitante: 'frances.avina@iccorp-demo.mx' },
+    { nombreProyecto: 'Filtración en sala de juntas · Corporativo', descripcion: 'Ingreso de agua por cubierta durante lluvias intensas.', areaResponsableSugerida: 'Obra Civil y Adecuaciones', areaSolicitante: 'Dirección Comercial', estado: 'Solicitud recibida', prioridad: 'Alta', nombreSolicitante: 'Laura Higuera', correoSolicitante: 'laura.higuera@iccorp-demo.mx' },
+    { nombreProyecto: 'Falla recurrente de aire acondicionado · Site TI', descripcion: 'El equipo se apaga y eleva la temperatura del cuarto de comunicaciones.', areaResponsableSugerida: 'Climatización y Equipos', areaSolicitante: 'Tecnología', estado: 'En revisión', prioridad: 'Crítica', nombreSolicitante: 'Carlos Peña', correoSolicitante: 'carlos.pena@iccorp-demo.mx' },
+    { nombreProyecto: 'Adecuación de accesos · Base Toluca', descripcion: 'Requiere ajustes de rampas, barandales y señalización.', areaResponsableSugerida: 'Obra Civil y Adecuaciones', areaSolicitante: 'Seguridad e Higiene', estado: 'Requiere ajustes', prioridad: 'Media', nombreSolicitante: 'Iván Torres', correoSolicitante: 'ivan.torres@iccorp-demo.mx', comentario: 'Falta levantamiento con medidas y evidencia de los accesos involucrados.' },
+    { nombreProyecto: 'Cambio de contactos en archivo muerto', descripcion: 'Sustitución de cuatro contactos dañados en un espacio sin operación continua.', areaResponsableSugerida: 'Mantenimiento General', areaSolicitante: 'Administración', estado: 'Rechazada', prioridad: 'Baja', nombreSolicitante: 'Miguel Ángel Ruiz', correoSolicitante: 'miguel.ruiz@iccorp-demo.mx', comentario: 'Trabajo menor a 30 días; se canaliza como orden operativa de mantenimiento.' },
+    { nombreProyecto: 'Renovación de cisterna · CEDIS Norte', descripcion: 'Limpieza, reparación de recubrimiento, bombas y controles de nivel.', areaResponsableSugerida: 'Mantenimiento General', areaSolicitante: 'Operaciones', estado: 'Pendiente de asignación', prioridad: 'Alta', nombreSolicitante: 'Fernanda Aviña', correoSolicitante: 'fernanda.avina@iccorp-demo.mx' },
   ]
 
   solicitudesExtra.forEach((s, i) => {
@@ -345,6 +351,11 @@ function seed(): DemoState {
       nombreSolicitante: s.nombreSolicitante,
       correoSolicitante: s.correoSolicitante,
       areaSolicitante: s.areaSolicitante,
+      inmueble: ['Corporativo CDMX', 'Corporativo CDMX', 'Base Toluca', 'CEDIS Poniente', 'CEDIS Norte'][i],
+      ubicacionEspecifica: ['Sala de juntas nivel 4', 'Site de comunicaciones', 'Acceso principal', 'Archivo muerto', 'Cisterna y cuarto de bombas'][i],
+      tipoMantenimiento: i === 1 ? 'Emergencia' : i === 2 ? 'Adecuación' : 'Correctivo',
+      especialidad: ['Impermeabilización', 'Climatización / HVAC', 'Obra civil', 'Electricidad', 'Plomería'][i],
+      impactoOperativo: 'Existe afectación potencial a la continuidad, seguridad o habitabilidad del inmueble.',
       nombreProyecto: s.nombreProyecto,
       descripcion: s.descripcion,
       problemaONecesidad: `Se identificó una oportunidad de mejora relacionada con "${s.nombreProyecto}".`,
@@ -360,6 +371,7 @@ function seed(): DemoState {
       motivoRechazoOAjuste: s.comentario,
       creadoEn: inicio,
       actualizadoEn: isoOffset(-(20 - i * 2) + 3),
+      syncStatus: 'local',
     }
     requests.push(req)
     pushHistory('ProjectRequest', requestId, inicio, 'sistema', '—', 'Solicitud recibida')
@@ -379,14 +391,14 @@ function seed(): DemoState {
   pushNotif('user-usr-3', 'Recordatorio de avance', 'No has registrado avance en "Sistema de Gestión de Turnos y Asistencia" en 12 días.', 'alerta', isoOffset(-1), false)
   pushNotif('user-lider-bi', 'Solicitud nueva', 'Se recibió la solicitud "Chatbot interno de soporte de TI".', 'info', isoOffset(-2), true)
   pushNotif('user-lider-ops', 'Evidencia por validar', '"Tablero de Indicadores de Manufactura" tiene evidencia lista para validación.', 'info', isoOffset(-1), false)
-  pushNotif('user-admin', 'Área sin líder', 'El área "Nóminas" no tiene un líder asignado.', 'alerta', isoOffset(-5), false)
+  pushNotif('user-admin', 'Cuadrilla sin responsable', 'Obra Civil y Adecuaciones no tiene un responsable asignado.', 'alerta', isoOffset(-5), false)
 
-  pushAudit(isoOffset(-400), 'user-admin', 'Creó área', 'Area', 'area-bi', 'Inteligencia de Negocios')
+  pushAudit(isoOffset(-400), 'user-admin', 'Creó cuadrilla', 'Area', 'area-bi', 'Mantenimiento General')
   pushAudit(isoOffset(-400), 'user-admin', 'Creó área', 'Area', 'area-ops', 'Operaciones')
-  pushAudit(isoOffset(-400), 'user-admin', 'Creó área', 'Area', 'area-nom', 'Nóminas')
+  pushAudit(isoOffset(-400), 'user-admin', 'Creó cuadrilla', 'Area', 'area-nom', 'Obra Civil y Adecuaciones')
   pushAudit(isoOffset(-380), 'user-admin', 'Asignó líder de área', 'Area', 'area-bi', 'Jorge Mejía')
   pushAudit(isoOffset(-380), 'user-admin', 'Asignó líder de área', 'Area', 'area-ops', 'Patricia Solís')
-  pushAudit(isoOffset(-30), 'user-admin', 'Creó usuario', 'User', 'user-usr-5', 'Frances Aviña (Nóminas)')
+  pushAudit(isoOffset(-30), 'user-admin', 'Creó usuario', 'User', 'user-usr-5', 'Fernando Ruiz (Obra Civil)')
 
   return { areas, users, requests, projects, assignments, progressUpdates, evidences, comments, statusHistory, notifications, audit }
 }
@@ -400,7 +412,14 @@ function load(): DemoState | null {
     if (!raw) return null
     const parsed = JSON.parse(raw) as DemoState
     if (!parsed.areas || !parsed.users || !parsed.projects) return null
-    return parsed
+    return {
+      ...parsed,
+      requests: (parsed.requests ?? []).map((request) => ({
+        ...request,
+        syncStatus: request.syncStatus ?? 'local',
+        syncMessage: request.syncMessage ?? 'Solicitud recuperada del almacenamiento local de este navegador.',
+      })),
+    }
   } catch {
     return null
   }
@@ -459,6 +478,11 @@ export interface NuevaSolicitudInput {
   nombreSolicitante: string
   correoSolicitante: string
   areaSolicitante: string
+  inmueble: string
+  ubicacionEspecifica: string
+  tipoMantenimiento: 'Preventivo' | 'Correctivo' | 'Adecuación' | 'Emergencia'
+  especialidad: string
+  impactoOperativo: string
   nombreProyecto: string
   descripcion: string
   problemaONecesidad: string
@@ -481,6 +505,7 @@ export function crearSolicitud(input: NuevaSolicitudInput): ProjectRequest {
     folio: folio('SOL', folioSeqSol),
     ...input,
     estado: 'Solicitud recibida',
+    syncStatus: 'local',
     creadoEn: ahora,
     actualizadoEn: ahora,
   }
@@ -499,6 +524,28 @@ export function crearSolicitud(input: NuevaSolicitudInput): ProjectRequest {
     ],
   }))
   return req
+}
+
+export function actualizarSincronizacionSolicitud(
+  requestId: string,
+  syncStatus: ProjectRequest['syncStatus'],
+  syncMessage?: string,
+) {
+  const ahora = new Date().toISOString()
+  setState((s) => ({
+    ...s,
+    requests: s.requests.map((r) =>
+      r.id === requestId
+        ? {
+            ...r,
+            syncStatus,
+            syncMessage,
+            syncedAt: syncStatus === 'synced' ? ahora : r.syncedAt,
+            actualizadoEn: ahora,
+          }
+        : r,
+    ),
+  }))
 }
 
 export function buscarSolicitud(folioBuscado: string, correo: string): ProjectRequest | undefined {

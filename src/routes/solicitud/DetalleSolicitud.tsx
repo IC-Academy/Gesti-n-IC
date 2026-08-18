@@ -47,6 +47,11 @@ export function DetalleSolicitud() {
         <CardHeader title="Detalle de la solicitud" />
         <CardBody className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
           <p className="sm:col-span-2"><span className="font-medium text-slate-700">Descripción:</span> {request.descripcion}</p>
+          <p><span className="font-medium text-slate-700">Inmueble:</span> {request.inmueble ?? 'No especificado'}</p>
+          <p><span className="font-medium text-slate-700">Ubicación exacta:</span> {request.ubicacionEspecifica ?? 'No especificada'}</p>
+          <p><span className="font-medium text-slate-700">Tipo:</span> {request.tipoMantenimiento ?? 'No especificado'}</p>
+          <p><span className="font-medium text-slate-700">Especialidad:</span> {request.especialidad ?? 'No especificada'}</p>
+          {request.impactoOperativo ? <p className="sm:col-span-2"><span className="font-medium text-slate-700">Impacto operativo:</span> {request.impactoOperativo}</p> : null}
           <p className="sm:col-span-2"><span className="font-medium text-slate-700">Problema o necesidad:</span> {request.problemaONecesidad}</p>
           <p className="sm:col-span-2"><span className="font-medium text-slate-700">Objetivo:</span> {request.objetivo}</p>
           <p className="sm:col-span-2"><span className="font-medium text-slate-700">Beneficio esperado:</span> {request.beneficioEsperado}</p>

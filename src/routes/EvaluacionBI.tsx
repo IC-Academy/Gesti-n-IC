@@ -114,7 +114,7 @@ export function EvaluacionBI() {
     setAccionEnCurso(null)
 
     if (res.networkError) {
-      setNetworkErr(networkErrorMessage('jmejiaromero.app.n8n.cloud'))
+      setNetworkErr(networkErrorMessage('servidor n8n configurado'))
       return
     }
     if (res.status === 400 && res.data?.errors) {
@@ -139,7 +139,7 @@ export function EvaluacionBI() {
     const res = await enviarAutorizacion({ folio, enviadoPor: evaluadoPor })
 
     if (res.networkError) {
-      setEnvioAutorizacion({ loading: false, error: networkErrorMessage('jmejiaromero.app.n8n.cloud'), ok: null })
+      setEnvioAutorizacion({ loading: false, error: networkErrorMessage('servidor n8n configurado'), ok: null })
       return
     }
     if (!res.ok || !res.data?.ok) {

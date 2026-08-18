@@ -24,7 +24,7 @@ export function BandejaBI() {
     const res = await listarSolicitudes({ estados: estadosFiltro, area: area.trim() })
 
     if (res.networkError) {
-      setError(networkErrorMessage('jmejiaromero.app.n8n.cloud'))
+      setError(networkErrorMessage('servidor n8n configurado'))
       setLoading(false)
       return
     }

@@ -24,11 +24,6 @@ import { Auditoria } from '@/routes/admin/Auditoria'
 import { Perfil } from '@/routes/general/Perfil'
 import { NotFound } from '@/routes/general/NotFound'
 
-import { BandejaBI } from '@/routes/BandejaBI'
-import { RegistrarSolicitud } from '@/routes/RegistrarSolicitud'
-import { ConsultarSolicitud } from '@/routes/ConsultarSolicitud'
-import { EvaluacionBI } from '@/routes/EvaluacionBI'
-import { CentroAutorizaciones } from '@/routes/CentroAutorizaciones'
 
 export default function App() {
   return (
@@ -84,13 +79,6 @@ function AreaAutenticada() {
         <Route path="/admin/areas" element={<RequireRole roles={['admin']}><AreasLideres /></RequireRole>} />
         <Route path="/admin/catalogos" element={<RequireRole roles={['admin']}><Catalogos /></RequireRole>} />
         <Route path="/admin/auditoria" element={<RequireRole roles={['admin']}><Auditoria /></RequireRole>} />
-
-        {/* Integración real con n8n/Airtable (PBI-01..07) — sin cambios de contrato */}
-        <Route path="/bi/registrar" element={<RegistrarSolicitud />} />
-        <Route path="/bi/consultar" element={<ConsultarSolicitud />} />
-        <Route path="/bi/bandeja" element={<RequireRole roles={['lider', 'admin']}><BandejaBI /></RequireRole>} />
-        <Route path="/bi/evaluacion/:folio" element={<RequireRole roles={['lider', 'admin']}><EvaluacionBI /></RequireRole>} />
-        <Route path="/bi/autorizaciones" element={<RequireRole roles={['lider', 'admin']}><CentroAutorizaciones /></RequireRole>} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

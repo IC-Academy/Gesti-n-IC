@@ -1,6 +1,5 @@
-// Cliente HTTP para los webhooks reales de n8n (PBI-01 a PBI-07).
-// No hay backend propio: cada funcion aqui hace un fetch() directo desde el
-// navegador contra la URL de produccion correspondiente.
+// Cliente HTTP para los contratos n8n PBI-01 a PBI-07. Las URLs se inyectan
+// por entorno; nunca se versionan endpoints reales en el repositorio.
 //
 // Si la variable VITE_PBI0X_URL correspondiente no está configurada (por
 // ejemplo en un fork del repo, en un preview, o mientras el equipo de n8n
@@ -54,11 +53,15 @@ async function postJson<TResponse>(
   }
 
   try {
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), 10000)
     const res = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
+      signal: controller.signal,
     })
+    window.clearTimeout(timeout)
 
     let data: TResponse | null = null
     try {

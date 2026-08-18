@@ -42,7 +42,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   const general: NavItem[] = [{ to: '/resumen', label: 'Resumen', icon: BarChart3, end: true }]
 
-  const proyectos: NavItem[] = [{ to: '/proyectos', label: user.rol === 'usuario' ? 'Mis proyectos' : user.rol === 'lider' ? 'Proyectos del equipo' : 'Todos los proyectos', icon: FolderKanban }]
+  const proyectos: NavItem[] = [{ to: '/proyectos', label: user.rol === 'usuario' ? 'Mis trabajos asignados' : user.rol === 'lider' ? 'Intervenciones del equipo' : 'Portafolio de mantenimiento', icon: FolderKanban }]
 
   const portal: NavItem[] = [
     { to: '/portal/nueva-solicitud', label: 'Nueva solicitud', icon: ClipboardList },
@@ -52,9 +52,9 @@ export function Layout({ children }: { children: ReactNode }) {
   const liderazgo: NavItem[] =
     user.rol === 'lider' || user.rol === 'admin'
       ? [
-          { to: '/solicitudes', label: user.rol === 'admin' ? 'Todas las solicitudes' : 'Solicitudes del área', icon: Inbox },
-          { to: '/asignacion', label: 'Asignación de responsables', icon: ListChecks },
-          { to: '/equipo/carga', label: 'Carga de trabajo', icon: Users },
+          { to: '/solicitudes', label: user.rol === 'admin' ? 'Todas las solicitudes' : 'Bandeja de mantenimiento', icon: Inbox },
+          { to: '/asignacion', label: 'Asignar técnicos', icon: ListChecks },
+          { to: '/equipo/carga', label: 'Carga de técnicos', icon: Users },
           { to: '/evidencias/validacion', label: 'Validación de evidencias', icon: ShieldCheck },
           { to: '/alertas', label: 'Alertas', icon: AlertTriangle },
         ]
@@ -65,17 +65,11 @@ export function Layout({ children }: { children: ReactNode }) {
       ? [
           { to: '/admin/usuarios', label: 'Usuarios', icon: Users },
           { to: '/admin/roles', label: 'Roles y permisos', icon: ShieldCheck },
-          { to: '/admin/areas', label: 'Áreas y líderes', icon: BriefcaseBusiness },
+          { to: '/admin/areas', label: 'Cuadrillas y responsables', icon: BriefcaseBusiness },
           { to: '/admin/catalogos', label: 'Catálogos', icon: LayoutGrid },
           { to: '/admin/auditoria', label: 'Auditoría', icon: Gauge },
         ]
       : []
-
-  const bi: NavItem[] = [
-    { to: '/bi/registrar', label: 'Solicitud BI (n8n)', icon: ClipboardList },
-    { to: '/bi/consultar', label: 'Consultar solicitud BI', icon: FileSearch },
-    ...(user.rol !== 'usuario' ? ([{ to: '/bi/bandeja', label: 'Bandeja BI (n8n)', icon: Inbox }, { to: '/bi/autorizaciones', label: 'Autorizaciones BI (n8n)', icon: ShieldCheck }] as NavItem[]) : []),
-  ]
 
   function renderGroup(title: string, items: NavItem[]) {
     if (!items.length) return null
@@ -103,20 +97,19 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
           <span className="gestion-logo">IC</span>
           <div>
-            <p className="text-sm font-semibold">Gestión IC</p>
-            <p className="text-[10px] text-blue-300">Proyectos corporativos</p>
+            <p className="text-sm font-semibold">Gestión IC Mantenimiento</p>
+            <p className="text-[10px] text-blue-300">Inmuebles e instalaciones</p>
           </div>
         </div>
         <nav className="flex-1 space-y-1 pb-3">
           {renderGroup('ESPACIO CORPORATIVO', general)}
-          {renderGroup('PROYECTOS', proyectos)}
-          {renderGroup('PORTAL DE SOLICITUDES', portal)}
-          {renderGroup('LIDERAZGO', liderazgo)}
+          {renderGroup('INTERVENCIONES +30 DÍAS', proyectos)}
+          {renderGroup('SOLICITUDES DE SERVICIO', portal)}
+          {renderGroup('COORDINACIÓN DE MANTENIMIENTO', liderazgo)}
           {renderGroup('ADMINISTRACIÓN', administracion)}
-          {renderGroup('INTEGRACIÓN BI · n8n (real)', bi)}
         </nav>
         <div className="mx-4 mb-3 rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-[10px] text-emerald-200">
-          ● Proyectos, solicitudes y usuarios son datos de demostración
+          ● Solicitudes, inmuebles y trabajos son datos de demostración
         </div>
         <div className="border-t border-white/10 p-3">
           <div className="relative">

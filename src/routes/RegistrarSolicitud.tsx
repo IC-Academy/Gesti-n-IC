@@ -61,7 +61,7 @@ export function RegistrarSolicitud() {
     setSubmitting(false)
 
     if (res.networkError) {
-      setNetworkErr(networkErrorMessage('jmejiaromero.app.n8n.cloud'))
+      setNetworkErr(networkErrorMessage('servidor n8n configurado'))
       return
     }
     if (res.status === 400 && res.data?.errors) {

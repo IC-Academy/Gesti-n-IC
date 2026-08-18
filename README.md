@@ -1,13 +1,12 @@
-# Gestión IC — Portal Corporativo de Proyectos
+# Gestión IC — Mantenimiento de Inmuebles e Instalaciones
 
-Primera versión funcional del portal para administrar proyectos con duración mayor a
-30 días entre distintas áreas de la organización: solicitud, dictamen, asignación,
-seguimiento con evidencias y administración por roles (Usuario, Líder, Administrador).
+Demo ejecutiva de fase 1 para autorizar un portal dedicado al equipo de mantenimiento
+de inmuebles e instalaciones. Centraliza solicitudes, diagnóstico, priorización,
+asignación de técnicos, intervenciones mayores a 30 días, avances y evidencias.
 
-Conserva intactos los contratos reales **PBI-01 a PBI-07** con n8n/Airtable (registro y
-consulta de solicitudes BI, bandeja, evaluación y autorizaciones) e incorpora, como
-módulo nuevo, la gestión de proyectos con modelo de datos completo, catálogo de
-estados centralizado, permisos por rol y datos de demostración.
+El alcance de esta demo es exclusivamente mantenimiento. La integración con Jira,
+las órdenes operativas menores a 30 días y la persistencia productiva se reservan
+para fase 2, después de la autorización funcional.
 
 **Repositorio:** https://github.com/IC-Academy/Gesti-n-IC
 **URL pública (GitHub Pages):** https://ic-academy.github.io/Gesti-n-IC/
@@ -19,8 +18,8 @@ React Hook Form + Zod + Recharts + lucide-react. Sin backend propio.
 
 | Área | Estado | Detalle |
 |---|---|---|
-| Solicitudes BI (`/#/bi/...`) | **Real** | Habla directo con los 7 webhooks de n8n/Airtable (PBI-01 a PBI-07). Contratos sin cambios. |
-| Gestión de Proyectos (`/#/proyectos`, `/#/solicitudes`, `/#/admin/...`, `/#/portal/...`) | **Demostración** | No existe todavía un backend para este módulo. Los datos viven en `localStorage` (`src/lib/demoStore.ts`), sembrados con información de ejemplo realista. La capa de servicio (`src/lib/projectsApi.ts`) ya está tipada y preparada para conectarse a n8n vía `VITE_PROJECTS_REQUEST_URL` cuando ese webhook exista. |
+| Portal de mantenimiento (`/#/proyectos`, `/#/solicitudes`, `/#/admin/...`, `/#/portal/...`) | **Demostración** | Los datos viven en `localStorage`, con inmuebles, cuadrillas, solicitudes e intervenciones ficticias para validar el proceso. |
+| Integración Jira | **Fase 2** | No forma parte de esta entrega ni se muestra como integración activa. |
 | Autenticación / selección de perfil | **Simulada** | No hay login real: se elige una persona de ejemplo (ver `src/lib/session.tsx`). La versión productiva debe sustituir esto por el proveedor de identidad corporativo (p. ej. Microsoft Entra ID). |
 
 En ambos casos, si falta configuración (una URL `VITE_PBI0X_URL`, o el nuevo
@@ -38,11 +37,11 @@ demostración" / "● Integración real · n8n").
 | Persona | Rol | Área | Qué puedes probar |
 |---|---|---|---|
 | Andrea Bautista | Administrador | Dirección de Tecnología | Todo: usuarios, roles, áreas, catálogos, auditoría, y todas las funciones de líder/usuario. |
-| Jorge Mejía | Líder | Inteligencia de Negocios | Solicitudes del área, asignación, carga de trabajo, validación de evidencias, alertas. |
-| Patricia Solís | Líder | Operaciones | Igual que Jorge, con el portafolio de Operaciones (incluye un proyecto bloqueado y uno próximo a vencer). |
-| Daniela Juárez / Ricardo Nava | Usuario | Inteligencia de Negocios | Mis proyectos, registrar avance, cargar evidencias, historial. |
-| Manuel Ortega / Sofía Camacho | Usuario | Operaciones | Igual, con un proyecto recién asignado (sin actualización todavía). |
-| Frances Aviña | Usuario | Nóminas | Un proyecto atrasado y uno cancelado, para ver esos estados. |
+| Carlos Mendoza | Líder | Mantenimiento General | Solicitudes, asignación, carga de técnicos, evidencias y alertas. |
+| Patricia Solís | Líder | Climatización y Equipos | Intervenciones HVAC, bloqueos y vencimientos. |
+| Daniela Juárez / Ricardo Nava | Usuario | Mantenimiento General | Trabajos asignados, avances, evidencia e historial. |
+| Manuel Ortega / Sofía Camacho | Usuario | Climatización y Equipos | Intervenciones HVAC y electromecánicas. |
+| Fernando Ruiz | Usuario | Obra Civil y Adecuaciones | Obra, impermeabilización y adecuaciones. |
 
 Flujo sugerido para probar el ciclo completo:
 
@@ -110,9 +109,8 @@ nunca mutan datos directamente, solo llaman a las funciones exportadas de ese ar
 
 ## Datos de demostración incluidos
 
-- **4 áreas**: Inteligencia de Negocios, Operaciones, Nóminas (sin líder asignado a
-  propósito, para poder probar "Asignar líder" como administrador) y Dirección de
-  Tecnología.
+- **4 cuadrillas/funciones**: Mantenimiento General, Climatización y Equipos,
+  Obra Civil y Adecuaciones, y Administración de Inmuebles.
 - **8 personas**: 1 administrador, 2 líderes, 5 usuarios (ver tabla arriba). Ningún
   correo es real; todos usan el dominio `@iccorp-demo.mx`.
 - **10 proyectos** con estados variados: atrasado, bloqueado, próximo a vencer, sin
@@ -138,10 +136,10 @@ npm install
 cp .env.example .env
 ```
 
-`.env` **nunca** se sube al repositorio (está en `.gitignore`). Las URLs de
-`.env.example` para PBI-01 a PBI-07 son las de producción real de n8n
-(`jmejiaromero.app.n8n.cloud`); normalmente no hace falta cambiarlas. Si falta alguna,
-esa pantalla específica cae a modo demostración local (ver
+`.env` **nunca** se sube al repositorio (está en `.gitignore`). `.env.example`
+es una plantilla segura y no contiene endpoints ni credenciales reales. Configura las
+URLs mediante variables del entorno de despliegue. Si falta alguna, esa pantalla
+específica cae a modo demostración local (ver
 `src/lib/pbiDemoFallback.ts`) en vez de fallar o quedar en blanco.
 
 `VITE_PROJECTS_REQUEST_URL` es nueva y opcional (ver sección de arriba): déjala vacía
@@ -182,7 +180,8 @@ Antes del primer despliegue, configurar en el repositorio:
 - **Settings → Pages → Source = "GitHub Actions"** (no "Deploy from a branch").
 - **Settings → Secrets and variables → Actions → Variables**: las 7 variables
   `VITE_PBI0X_URL` (ver tabla más abajo). `VITE_PROJECTS_REQUEST_URL` es opcional.
-- Si se usa `VITE_DEFAULT_API_KEY`, agregarla como **Secret** (no como Variable).
+- No inyectar una API key mediante `VITE_*`: Vite la incrusta en el bundle público.
+  Las operaciones privadas requieren autenticación y autorización del lado servidor.
 
 ### HashRouter — por qué no hay pantalla en blanco al refrescar
 
@@ -200,9 +199,21 @@ nunca en blanco.
 | Variable | Uso |
 |---|---|
 | `VITE_PBI01_URL` … `VITE_PBI07_URL` | Webhooks reales de n8n (solicitudes BI). Si faltan, esas pantallas caen a modo demo local (no bloquean el build ni la app). |
-| `VITE_DEFAULT_API_KEY` | Opcional; `x-api-key` por defecto para los endpoints privados PBI-01/03/04/05. Configurar como **Secret**, no como Variable. |
+| `VITE_DEFAULT_API_KEY` | Solo para pruebas locales controladas. No utilizar como secreto de producción: queda visible en el navegador. |
 | `VITE_PROJECTS_REQUEST_URL` | Opcional; webhook futuro para el Portal del Solicitante nuevo (módulo de Proyectos). Vacío = modo demo. |
 | `VITE_BASE_PATH` | Opcional; ya tiene `"/Gesti-n-IC/"` por defecto en `vite.config.ts`. |
+
+### Seguridad de producción
+
+Las rutas y botones por rol son controles de experiencia de usuario, no una frontera
+de seguridad. n8n o el backend debe verificar identidad, rol, área y autorización en
+cada lectura y escritura. Ningún endpoint privado debe aceptar solicitudes sin una
+identidad válida. Los valores `VITE_*`, incluidas URLs y claves, son inspeccionables
+desde el navegador.
+
+Las solicitudes del módulo nuevo registran `syncStatus`: `local`, `pending`, `synced`
+o `error`. La confirmación distingue el guardado local del envío real a n8n; nunca
+presenta un fallo de sincronización como persistencia externa exitosa.
 
 ## Payloads documentados
 

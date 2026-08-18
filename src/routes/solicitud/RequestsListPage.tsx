@@ -35,7 +35,7 @@ export function RequestsListPage({ scope, title, subtitle, soloAbiertas }: { sco
   return (
     <div>
       <div className="mb-6">
-        <p className="gestion-kicker">SOLICITUDES DE PROYECTO</p>
+        <p className="gestion-kicker">SOLICITUDES DE MANTENIMIENTO</p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{title}</h1>
         <p className="text-sm text-slate-500">{subtitle}</p>
       </div>
@@ -59,7 +59,7 @@ export function RequestsListPage({ scope, title, subtitle, soloAbiertas }: { sco
                 <tr>
                   <th>SOLICITUD</th>
                   <th>SOLICITANTE</th>
-                  <th>ÁREA SUGERIDA</th>
+                  <th>INMUEBLE / RESPONSABLE</th>
                   <th>PRIORIDAD</th>
                   <th>ESTADO</th>
                   <th>RECIBIDA</th>
@@ -70,7 +70,7 @@ export function RequestsListPage({ scope, title, subtitle, soloAbiertas }: { sco
                   <tr key={r.id} className="cursor-pointer hover:bg-slate-50" onClick={() => nav(`/solicitudes/${r.id}`)}>
                     <td><b>{r.nombreProyecto}</b><small>{r.folio}</small></td>
                     <td>{r.nombreSolicitante}<br /><small className="text-[10px] text-slate-400">{r.correoSolicitante}</small></td>
-                    <td>{r.areaResponsableSugerida}</td>
+                    <td>{r.inmueble ?? '—'}<br /><small className="text-[10px] text-slate-400">{r.areaResponsableSugerida}</small></td>
                     <td><PriorityBadge prioridad={r.prioridad} /></td>
                     <td><StatusBadge estado={r.estado} /></td>
                     <td>{new Date(r.creadoEn).toLocaleDateString('es-MX')}</td>

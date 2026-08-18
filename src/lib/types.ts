@@ -212,6 +212,8 @@ export type Role = 'usuario' | 'lider' | 'admin'
 
 export type Priority = 'Baja' | 'Media' | 'Alta' | 'Crítica'
 
+export type SyncStatus = 'local' | 'pending' | 'synced' | 'error'
+
 /**
  * Catálogo centralizado de estados del ciclo de vida completo de una
  * iniciativa: desde que se solicita hasta que se cierra. Ver src/lib/catalog.ts
@@ -273,6 +275,11 @@ export interface ProjectRequest {
   nombreSolicitante: string
   correoSolicitante: string
   areaSolicitante: string
+  inmueble?: string
+  ubicacionEspecifica?: string
+  tipoMantenimiento?: 'Preventivo' | 'Correctivo' | 'Adecuación' | 'Emergencia'
+  especialidad?: string
+  impactoOperativo?: string
   nombreProyecto: string
   descripcion: string
   problemaONecesidad: string
@@ -289,6 +296,10 @@ export interface ProjectRequest {
   creadoEn: string
   actualizadoEn: string
   proyectoId?: string
+  /** Estado de persistencia externa. En demo la fuente de verdad sigue siendo localStorage. */
+  syncStatus: SyncStatus
+  syncMessage?: string
+  syncedAt?: string
 }
 
 /** Proyecto activo (existe desde que una solicitud se asigna a un responsable). */

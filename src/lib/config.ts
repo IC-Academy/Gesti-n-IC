@@ -1,10 +1,10 @@
 // Configuracion central del frontend: URLs reales de los webhooks de n8n y
 // preferencias del usuario (x-api-key, nombre del analista) persistidas en localStorage.
 //
-// IMPORTANTE: no hay backend propio ni mocks. Todas las URLs vienen EXCLUSIVAMENTE de
-// variables de entorno VITE_* (ver .env.example). Este archivo NO contiene URLs de
-// produccion "de respaldo": si falta una variable, la app debe mostrar un error de
-// configuracion claro en vez de intentar adivinar o usar un valor oculto.
+// Todas las URLs vienen exclusivamente de variables VITE_*; este archivo no
+// contiene endpoints de produccion de respaldo. Todo valor VITE_* queda visible
+// en el bundle del navegador, por lo que DEFAULT_API_KEY solo sirve para pruebas
+// locales controladas y nunca debe considerarse un secreto de produccion.
 
 interface EnvShape {
   PBI01_URL: string

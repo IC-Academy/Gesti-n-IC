@@ -80,6 +80,11 @@ export function ConsultaEstatus() {
             {resultado.motivoRechazoOAjuste ? (
               <Alert tone="warning" title="Observación del equipo revisor">{resultado.motivoRechazoOAjuste}</Alert>
             ) : null}
+            <Alert tone={resultado.syncStatus === 'synced' ? 'success' : resultado.syncStatus === 'error' ? 'warning' : 'info'} title="Persistencia de la solicitud">
+              {resultado.syncMessage ?? (resultado.syncStatus === 'local'
+                ? 'Esta solicitud existe solamente en el almacenamiento local de este navegador.'
+                : `Estado de sincronización: ${resultado.syncStatus}.`)}
+            </Alert>
             <div>
               <p className="gestion-kicker mb-2">HISTORIAL DE ESTATUS</p>
               <ol className="space-y-2 border-l-2 border-slate-100 pl-4">

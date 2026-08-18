@@ -1,6 +1,11 @@
-# Gestión IC — Primera versión funcional
+# Gestión IC Mantenimiento — Demo de autorización fase 1
 
 ## Incluye
+
+- Enfoque exclusivo en inmuebles e instalaciones.
+- Solicitudes con inmueble, ubicación exacta, tipo de mantenimiento, especialidad e impacto operativo.
+- Cuadrillas de mantenimiento general, climatización, obra civil y administración de inmuebles.
+- Jira queda fuera de alcance y documentado para fase 2.
 
 - Acceso por perfiles demo: Usuario, Líder y Administrador (8 personas de ejemplo).
 - Portal del solicitante nuevo (público/semipúblico): registrar solicitud (>30 días),
@@ -25,6 +30,9 @@ flujo `/#/bi/...` (PBI-01 a PBI-07) es real; el módulo de Gestión de Proyectos
 ## Seguridad de la demo
 
 - No contiene API keys reales ni correos reales (dominio `@iccorp-demo.mx`).
+- No contiene URLs reales de webhooks; `.env.example` solo conserva nombres de variables.
+- No inyecta API keys `VITE_*` durante GitHub Actions porque quedarían visibles en el navegador.
+- Distingue guardado local, sincronización pendiente, exitosa y fallida.
 - `SEND_REAL_EMAILS` debe permanecer en `false` en n8n (sin cambios).
 - Conserva los folios `SOL-`/`PRY-` del flujo PBI y usa `GIC-SOL-`/`GIC-PRY-` para el
   módulo nuevo, para no confundir ambos sistemas.

@@ -44,7 +44,7 @@ export function ProjectsListPage({ scope, title, subtitle }: { scope: 'own' | 'a
   return (
     <div>
       <div className="mb-6">
-        <p className="gestion-kicker">EJECUCIÓN · PROYECTOS +30 DÍAS</p>
+        <p className="gestion-kicker">MANTENIMIENTO MAYOR · INTERVENCIONES +30 DÍAS</p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{title}</h1>
         <p className="text-sm text-slate-500">{subtitle}</p>
       </div>
@@ -95,9 +95,9 @@ export function ProjectsListPage({ scope, title, subtitle }: { scope: 'own' | 'a
             <table className="gestion-table">
               <thead>
                 <tr>
-                  <th>PROYECTO</th>
-                  <th>ÁREA</th>
-                  <th>RESPONSABLE</th>
+                  <th>INTERVENCIÓN</th>
+                  <th>CUADRILLA</th>
+                  <th>TÉCNICO RESPONSABLE</th>
                   <th>PRIORIDAD</th>
                   <th>ESTADO</th>
                   <th>AVANCE</th>

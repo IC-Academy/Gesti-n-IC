@@ -22,8 +22,9 @@ export function Catalogos() {
           que todas las pantallas usen exactamente la misma fuente de verdad.
         </p>
       </div>
+      <Alert tone="info" title="Catálogos de solo lectura">Los estados y prioridades son informativos en esta demo. Su edición se habilitará cuando exista un backend con auditoría y autorización.</Alert>
 
-      <Card>
+      <Card className="mt-4">
         <CardHeader title="Estados del ciclo de vida" subtitle="Flujo de una solicitud desde que se recibe hasta que el proyecto se cierra." />
         <CardBody className="overflow-auto">
           <table className="gestion-table">

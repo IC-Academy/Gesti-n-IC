@@ -50,6 +50,7 @@ export function RolesPermisos() {
         acción de escritura debe volver a validarse del lado del servidor — nunca confiar solo en lo que oculta el
         frontend.
       </Alert>
+      <div className="mt-4"><Alert tone="info" title="Vista de solo lectura">La matriz es informativa en esta versión. La administración de permisos requiere persistencia y validación del lado servidor.</Alert></div>
 
       <section className="gestion-panel mt-4 overflow-auto">
         <table className="gestion-table">

@@ -1,7 +1,7 @@
 {
-  "name": "gestion-ic",
+  "name": "gestion-ic-mantenimiento",
   "private": true,
-  "version": "1.0.0-demo",
+  "version": "1.0.0-demo-mantenimiento",
   "type": "module",
   "scripts": {
     "dev": "vite",

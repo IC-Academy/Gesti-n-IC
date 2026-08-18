@@ -59,10 +59,10 @@ export function Dashboard() {
 
   const saludo =
     user.rol === 'admin'
-      ? 'Portafolio corporativo'
+      ? 'Control general de mantenimiento'
       : user.rol === 'lider'
-        ? `Hola, ${user.nombre.split(' ')[0]}. Tu equipo requiere atención.`
-        : `Hola, ${user.nombre.split(' ')[0]}. Estos son tus proyectos.`
+        ? `Hola, ${user.nombre.split(' ')[0]}. Estas son las prioridades de tu cuadrilla.`
+        : `Hola, ${user.nombre.split(' ')[0]}. Estos son tus trabajos asignados.`
 
   return (
     <div>
@@ -71,23 +71,23 @@ export function Dashboard() {
           <p className="gestion-kicker">{new Date().toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long' }).toUpperCase()}</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">{saludo}</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {user.rol === 'usuario' ? 'Da seguimiento a tus asignaciones y mantén la evidencia al día.' : 'Decisiones, avance y riesgos de las iniciativas de largo plazo.'}
+            {user.rol === 'usuario' ? 'Registra diagnóstico, avance y evidencia de cada intervención.' : 'Solicitudes, avances, vencimientos y riesgos de inmuebles e instalaciones.'}
           </p>
         </div>
-        <button className="gestion-secondary" onClick={() => nav('/portal/nueva-solicitud')}>＋ Solicitar proyecto</button>
+        <button className="gestion-secondary" onClick={() => nav('/portal/nueva-solicitud')}>＋ Reportar mantenimiento</button>
       </div>
 
       <KpiRow
         items={
           user.rol === 'usuario'
             ? [
-                { icon: FolderKanban, value: kpis.activos, label: 'PROYECTOS ACTIVOS', tone: 0 },
+                { icon: FolderKanban, value: kpis.activos, label: 'TRABAJOS ACTIVOS', tone: 0 },
                 { icon: Clock3, value: kpis.atrasados + kpis.bloqueados, label: 'REQUIEREN ATENCIÓN', tone: 1 },
                 { icon: TrendingUp, value: `${kpis.avancePromedio}%`, label: 'AVANCE PROMEDIO', tone: 2 },
                 { icon: AlertTriangle, value: kpis.proximosAVencer, label: 'PRÓXIMOS A VENCER', tone: 3 },
               ]
             : [
-                { icon: FolderKanban, value: kpis.activos, label: 'PROYECTOS ACTIVOS', tone: 0 },
+                { icon: FolderKanban, value: kpis.activos, label: 'INTERVENCIONES ACTIVAS', tone: 0 },
                 { icon: Inbox, value: kpis.solicitudesPendientes, label: 'SOLICITUDES PENDIENTES', tone: 1 },
                 { icon: TrendingUp, value: `${kpis.avancePromedio}%`, label: 'AVANCE PROMEDIO', tone: 2 },
                 { icon: Lock, value: kpis.bloqueados, label: 'BLOQUEADOS', tone: 3 },
@@ -105,11 +105,11 @@ export function Dashboard() {
       <div className="grid gap-4 xl:grid-cols-[1.6fr_.9fr]">
         <section className="gestion-panel">
           <div className="gestion-panel-head">
-            <div><b>Proyectos prioritarios</b><small>Iniciativas con actividad reciente o riesgo</small></div>
-            <button onClick={() => nav('/proyectos')}>Ver portafolio →</button>
+            <div><b>Intervenciones prioritarias</b><small>Inmuebles con actividad reciente, vencimiento o riesgo operativo</small></div>
+            <button onClick={() => nav('/proyectos')}>Ver mantenimiento →</button>
           </div>
           {prioritarios.length === 0 ? (
-            <EmptyState label="No hay proyectos activos por mostrar." />
+            <EmptyState label="No hay intervenciones activas por mostrar." />
           ) : (
             prioritarios.map((p) => {
               const area = areaPorId(state, p.areaId)

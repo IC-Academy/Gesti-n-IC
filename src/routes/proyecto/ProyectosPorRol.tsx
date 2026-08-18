@@ -5,7 +5,7 @@ import { ProjectsListPage } from './ProjectsListPage'
 export function ProyectosPorRol() {
   const { user } = useSession()
   if (!user) return null
-  if (user.rol === 'usuario') return <ProjectsListPage scope="own" title="Mis proyectos" subtitle="Proyectos donde participas como responsable o colaborador." />
-  if (user.rol === 'lider') return <ProjectsListPage scope="area" title="Proyectos del equipo" subtitle="Portafolio de proyectos de tu área." />
-  return <ProjectsListPage scope="all" title="Todos los proyectos" subtitle="Portafolio completo de Gestión IC." />
+  if (user.rol === 'usuario') return <ProjectsListPage scope="own" title="Mis trabajos asignados" subtitle="Intervenciones donde participas como técnico responsable o integrante de cuadrilla." />
+  if (user.rol === 'lider') return <ProjectsListPage scope="area" title="Intervenciones del equipo" subtitle="Mantenimiento mayor coordinado por tu cuadrilla." />
+  return <ProjectsListPage scope="all" title="Portafolio de mantenimiento" subtitle="Intervenciones mayores de inmuebles e instalaciones." />
 }

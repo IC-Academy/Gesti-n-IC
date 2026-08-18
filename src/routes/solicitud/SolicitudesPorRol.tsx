@@ -4,6 +4,6 @@ import { RequestsListPage } from './RequestsListPage'
 export function SolicitudesPorRol() {
   const { user } = useSession()
   if (!user) return null
-  if (user.rol === 'admin') return <RequestsListPage scope="all" title="Todas las solicitudes" subtitle="Solicitudes de proyecto de todas las áreas." />
-  return <RequestsListPage scope="area" title="Solicitudes del área" subtitle="Solicitudes que requieren revisión, dictamen o asignación en tu área." soloAbiertas />
+  if (user.rol === 'admin') return <RequestsListPage scope="all" title="Todas las solicitudes" subtitle="Necesidades de mantenimiento reportadas en todos los inmuebles." />
+  return <RequestsListPage scope="area" title="Bandeja de mantenimiento" subtitle="Solicitudes que requieren diagnóstico, priorización o asignación." soloAbiertas />
 }
