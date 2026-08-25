@@ -61,8 +61,11 @@ export function LoginPage() {
 
       <div className="flex flex-1 flex-col justify-center bg-ic-bg px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-sm">
-          <Link to="/" className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-ic-slate hover:text-ic-ink">
-            <ArrowLeft className="h-4 w-4" /> Volver al portal
+          <Link
+            to="/"
+            className="mb-8 inline-flex items-center gap-2 rounded-lg border border-ic-line bg-white px-4 py-2.5 text-sm font-semibold text-ic-blue-900 shadow-sm transition hover:border-ic-blue-200 hover:bg-ic-blue-50 focus-ring"
+          >
+            <ArrowLeft className="h-4 w-4" /> Regresar al portal público
           </Link>
 
           <div className="mb-2 flex lg:hidden">
