@@ -30,6 +30,7 @@ export function SolicitudDetallePage() {
 
   const [dictamen, setDictamen] = useState('')
   const [decisionPendiente, setDecisionPendiente] = useState<Decision | null>(null)
+  const [confirmacionAbierta, setConfirmacionAbierta] = useState(false)
   const [enviando, setEnviando] = useState(false)
 
   const [nombreProyecto, setNombreProyecto] = useState('')
@@ -76,20 +77,25 @@ export function SolicitudDetallePage() {
 
   const confirmarDecision = async () => {
     if (!solicitud || !usuario || !decisionPendiente) return
+    const decision = decisionPendiente
     if (!dictamen.trim()) {
       setErrores((e) => ({ ...e, dictamen: 'El dictamen es obligatorio.' }))
+      setConfirmacionAbierta(false)
       return
     }
-    if (decisionPendiente === 'AUTORIZADA' && !validarAutorizacion()) return
+    if (decision === 'AUTORIZADA' && !validarAutorizacion()) {
+      setConfirmacionAbierta(false)
+      return
+    }
 
     setEnviando(true)
     const resultado = await solicitudesService.decidir(solicitud.id, rolEfectivo ?? undefined, {
-      decision: decisionPendiente,
+      decision,
       dictamen,
       actorId: usuario.id,
       actorNombre: usuario.nombre,
       proyecto:
-        decisionPendiente === 'AUTORIZADA'
+        decision === 'AUTORIZADA'
           ? {
               nombre: nombreProyecto,
               prioridad,
@@ -102,6 +108,7 @@ export function SolicitudDetallePage() {
           : undefined,
     })
     setEnviando(false)
+    setConfirmacionAbierta(false)
     setDecisionPendiente(null)
 
     if (!resultado.ok) {
@@ -112,11 +119,21 @@ export function SolicitudDetallePage() {
     notificar({
       tipo: 'exito',
       titulo:
-        decisionPendiente === 'AUTORIZADA' ? 'Solicitud autorizada y proyecto creado' : decisionPendiente === 'RECHAZADA' ? 'Solicitud rechazada' : 'Solicitud cancelada',
+        decision === 'AUTORIZADA' ? 'Solicitud autorizada y proyecto creado' : decision === 'RECHAZADA' ? 'Solicitud rechazada' : 'Solicitud cancelada',
     })
-    if (decisionPendiente === 'AUTORIZADA' && resultado.data.proyectoId) {
+    if (decision === 'AUTORIZADA' && resultado.data.proyectoId) {
       navigate(`/app/proyectos/${resultado.data.proyectoId}`)
     }
+  }
+
+  const abrirConfirmacion = (decision: Decision) => {
+    if (!dictamen.trim()) {
+      setErrores((e) => ({ ...e, dictamen: 'El dictamen es obligatorio.' }))
+      return
+    }
+    if (decision === 'AUTORIZADA' && !validarAutorizacion()) return
+    setDecisionPendiente(decision)
+    setConfirmacionAbierta(true)
   }
 
   if (error) return <ErrorState description={error} />
@@ -203,10 +220,10 @@ export function SolicitudDetallePage() {
               <Button variant="primary" onClick={() => setDecisionPendiente('AUTORIZADA')}>
                 <CheckCircle2 className="h-4 w-4" /> Autorizar
               </Button>
-              <Button variant="danger" onClick={() => setDecisionPendiente('RECHAZADA')}>
+              <Button variant="danger" onClick={() => abrirConfirmacion('RECHAZADA')}>
                 <XCircle className="h-4 w-4" /> Rechazar
               </Button>
-              <Button variant="outline" onClick={() => setDecisionPendiente('CANCELADA')}>
+              <Button variant="outline" onClick={() => abrirConfirmacion('CANCELADA')}>
                 <Ban className="h-4 w-4" /> Cancelar
               </Button>
             </div>
@@ -257,6 +274,11 @@ export function SolicitudDetallePage() {
                     onChange={(e) => setPresupuesto(e.target.value)}
                   />
                 </div>
+                <div className="mt-5 flex justify-end">
+                  <Button variant="primary" onClick={() => abrirConfirmacion('AUTORIZADA')}>
+                    <CheckCircle2 className="h-4 w-4" /> Continuar con autorización
+                  </Button>
+                </div>
               </div>
             )}
           </CardBody>
@@ -264,7 +286,7 @@ export function SolicitudDetallePage() {
       )}
 
       <ConfirmDialog
-        open={decisionPendiente !== null}
+        open={confirmacionAbierta}
         title={
           decisionPendiente === 'AUTORIZADA'
             ? 'Confirmar autorización'
@@ -281,7 +303,7 @@ export function SolicitudDetallePage() {
         confirmLabel="Enviar dictamen o resultado"
         loading={enviando}
         onConfirm={() => void confirmarDecision()}
-        onCancel={() => setDecisionPendiente(null)}
+        onCancel={() => setConfirmacionAbierta(false)}
       />
 
       {solicitud.proyectoId && (
