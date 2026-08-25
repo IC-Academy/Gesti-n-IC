@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/Gesti-n-IC/',
   plugins: [react(), tailwindcss()],
   build: {
     // El bundle único (React + Recharts + carta Gantt propia) ronda ~240 kB
