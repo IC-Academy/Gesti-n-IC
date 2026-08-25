@@ -20,13 +20,9 @@ export function AppShell() {
 
   const salir = () => {
     cerrarSesion()
-    // Recarga completa hacia el portal público: evita cualquier condición de
-    // carrera entre el guard de autenticación (que redirigiría a /login con
-    // un estado "from" obsoleto) y la navegación de salida, y garantiza que
-    // ningún estado en memoria del área privada sobreviva al cierre de sesión.
-    // Respeta la ruta base configurada por Vite. En GitHub Pages el portal
-    // vive bajo /Gesti-n-IC/ y HashRouter necesita volver a la raíz con #/.
-    window.location.assign(`${import.meta.env.BASE_URL}#/`)
+    // La navegación interna mantiene la ruta base y el hash de GitHub Pages.
+    // También desmonta el área privada antes de que su guard redirija a login.
+    navigate('/', { replace: true })
   }
 
   return (
