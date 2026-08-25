@@ -24,7 +24,9 @@ export function AppShell() {
     // carrera entre el guard de autenticación (que redirigiría a /login con
     // un estado "from" obsoleto) y la navegación de salida, y garantiza que
     // ningún estado en memoria del área privada sobreviva al cierre de sesión.
-    window.location.assign('/')
+    // Respeta la ruta base configurada por Vite. En GitHub Pages el portal
+    // vive bajo /Gesti-n-IC/ y HashRouter necesita volver a la raíz con #/.
+    window.location.assign(`${import.meta.env.BASE_URL}#/`)
   }
 
   return (
