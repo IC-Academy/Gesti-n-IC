@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
 import { RequireAuth, RequirePermission } from './routes/guards'
@@ -26,7 +26,7 @@ import { NoAutorizadoPage } from './pages/app/NoAutorizadoPage'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AuthProvider>
         <ToastProvider>
           <Routes>
@@ -85,6 +85,6 @@ export default function App() {
           </Routes>
         </ToastProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
