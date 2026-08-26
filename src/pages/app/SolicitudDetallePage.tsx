@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { CheckCircle2, XCircle, Ban, Mail, Phone, User2, Clock } from 'lucide-react'
+import { CheckCircle2, XCircle, Ban, Mail, Phone, User2, Clock, Paperclip } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { solicitudesService } from '../../services/solicitudesService'
 import { usuariosService } from '../../services/usuariosService'
@@ -15,6 +15,8 @@ import { Input, Select, Textarea } from '../../components/ui/Field'
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { useToast } from '../../context/ToastContext'
 import { formatFecha, formatFechaHora } from '../../lib/format'
+import { evidenciasService } from '../../services/evidenciasService'
+import type { Evidencia } from '../../types'
 
 type Decision = 'AUTORIZADA' | 'RECHAZADA' | 'CANCELADA'
 
@@ -27,6 +29,7 @@ export function SolicitudDetallePage() {
   const [solicitud, setSolicitud] = useState<Solicitud | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [responsables, setResponsables] = useState<Usuario[]>([])
+  const [evidencias, setEvidencias] = useState<Evidencia[]>([])
 
   const [dictamen, setDictamen] = useState('')
   const [decisionPendiente, setDecisionPendiente] = useState<Decision | null>(null)
@@ -53,8 +56,15 @@ export function SolicitudDetallePage() {
         setUbicacion(res.data.area)
       } else setError(res.error.message)
     })
+    evidenciasService.listarPorSolicitud(id).then((res) => {
+      if (activo && res.ok) setEvidencias(res.data)
+    })
     usuariosService.listarSeleccionables(rolEfectivo ?? undefined).then((res) => {
-      if (activo && res.ok) setResponsables(res.data.filter((u) => u.rol === 'JEFE_MANTENIMIENTO'))
+      if (activo && res.ok) {
+        const jefes = res.data.filter((u) => u.rol === 'JEFE_MANTENIMIENTO')
+        setResponsables(jefes)
+        setResponsableId((actual) => actual || jefes[0]?.id || '')
+      }
     })
     return () => {
       activo = false
@@ -71,6 +81,7 @@ export function SolicitudDetallePage() {
     if (!fechaFinPlaneada) nuevos.fechaFinPlaneada = 'Selecciona la fecha final estimada.'
     if (fechaInicio && fechaFinPlaneada && fechaFinPlaneada < fechaInicio) nuevos.fechaFinPlaneada = 'Debe ser posterior a la fecha inicial.'
     if (!ubicacion.trim()) nuevos.ubicacion = 'Indica la ubicación.'
+    if (!responsableId) nuevos.responsableId = 'Asigna un jefe de mantenimiento.'
     setErrores(nuevos)
     return Object.keys(nuevos).length === 0
   }
@@ -190,6 +201,18 @@ export function SolicitudDetallePage() {
             <p className="mt-1 text-sm leading-relaxed text-ic-ink">{solicitud.descripcion}</p>
           </div>
           <p className="mt-4 text-xs text-ic-slate">Registrada el {formatFechaHora(solicitud.creadoEn)}</p>
+          {evidencias.length > 0 && (
+            <div className="mt-5 border-t border-ic-line pt-4">
+              <p className="mb-2 text-xs font-medium text-ic-slate">Evidencias adjuntas</p>
+              <div className="flex flex-wrap gap-2">
+                {evidencias.map((e) => (
+                  <span key={e.id} className="inline-flex items-center gap-1.5 rounded-lg bg-ic-blue-50 px-3 py-2 text-xs font-medium text-ic-blue-800">
+                    <Paperclip className="h-3.5 w-3.5" /> {e.nombre}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </CardBody>
       </Card>
 
@@ -247,8 +270,8 @@ export function SolicitudDetallePage() {
                       </option>
                     ))}
                   </Select>
-                  <Select label="Responsable" value={responsableId} onChange={(e) => setResponsableId(e.target.value)} hint="Jefe de mantenimiento">
-                    <option value="">Sin asignar todavía</option>
+                  <Select label="Responsable" required value={responsableId} onChange={(e) => setResponsableId(e.target.value)} hint="Jefe de mantenimiento" error={errores.responsableId}>
+                    <option value="">Selecciona un responsable</option>
                     {responsables.map((r) => (
                       <option key={r.id} value={r.id}>
                         {r.nombre}
