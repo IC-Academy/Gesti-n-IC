@@ -19,10 +19,10 @@ export function AppShell() {
   if (!usuario) return null
 
   const salir = () => {
-    cerrarSesion()
-    // La navegación interna mantiene la ruta base y el hash de GitHub Pages.
-    // También desmonta el área privada antes de que su guard redirija a login.
+    // Primero desmonta el área privada; después limpia la sesión. Separar ambas
+    // actualizaciones evita que RequireAuth alcance a redirigir a /login.
     navigate('/', { replace: true })
+    window.setTimeout(cerrarSesion, 0)
   }
 
   return (
