@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { KeyRound, ArrowLeft } from 'lucide-react'
 import { Input } from '../../components/ui/Field'
 import { Button } from '../../components/ui/Button'
@@ -22,10 +22,7 @@ export function LoginPage() {
   const [cargando, setCargando] = useState(false)
   const { iniciarSesion } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
   const { notificar } = useToast()
-
-  const destino = (location.state as { from?: Location })?.from?.pathname
 
   const enviar = async () => {
     setError(null)
@@ -41,7 +38,9 @@ export function LoginPage() {
       return
     }
     notificar({ tipo: 'exito', titulo: 'Bienvenido(a)' })
-    navigate(destino ?? homeRouteForRole(resultado.usuario.rol), { replace: true })
+    // Cada inicio de sesión comienza en la portada correspondiente al nuevo
+    // rol. Así, al cambiar de usuario no se hereda una ruta privada anterior.
+    navigate(homeRouteForRole(resultado.usuario.rol), { replace: true })
   }
 
   return (
